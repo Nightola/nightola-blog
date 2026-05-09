@@ -1,6 +1,6 @@
 # Base URL used when generating links to your pages
 # Set to the URL for your site
-baseURL = "https://example.com"
+baseURL = "https://nightola-227.pages.dev"
 
 # The name of this wonderful theme ;-).
 theme = 'hugo-bearblog'
