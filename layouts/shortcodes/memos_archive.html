@@ -5,7 +5,7 @@
       <button class="year-btn active" data-year="all">最近10条</button>
       {{ $allMemos := (where .Site.RegularPages "Section" "memos_archive") }}
       {{ $years := slice }}
-      {{ range (first 10 $allMemos.ByDate.Reverse) }}
+      {{ range $allMemos.ByDate.Reverse }}
         {{ $years = $years | append (.Date.Format "2006") }}
       {{ end }}
       {{ range ($years | uniq) }}
@@ -44,19 +44,38 @@
     const items = document.querySelectorAll('.archive-item');
     if (!searchInput) return;
 
-    function filter() {
-      const searchText = searchInput.value.toLowerCase();
-      const activeBtn = document.querySelector('.year-btn.active');
-      const activeYear = activeBtn ? activeBtn.dataset.year : 'all';
+function filter() {
+  const searchText = searchInput.value.toLowerCase();
+  const activeBtn = document.querySelector('.year-btn.active');
+  const activeYear = activeBtn ? activeBtn.dataset.year : 'all';
+  
+  let visibleCount = 0; // 新增：计数器
 
-      items.forEach(item => {
-        const text = item.querySelector('.m-t').innerText.toLowerCase();
-        const year = item.dataset.year;
-        const matchesSearch = text.includes(searchText);
-        const matchesYear = (activeYear === 'all' || year === activeYear);
-        item.style.display = (matchesSearch && matchesYear) ? 'grid' : 'none';
-      });
+  items.forEach(item => {
+    const text = item.querySelector('.m-t').innerText.toLowerCase();
+    const year = item.dataset.year;
+    const matchesSearch = text.includes(searchText);
+    const matchesYear = (activeYear === 'all' || year === activeYear);
+
+    // 核心逻辑修改：
+    if (matchesSearch && matchesYear) {
+      if (activeYear === 'all' && searchText === '') {
+        // 如果是“全部”模式且没有搜索，只显示前 10 条
+        if (visibleCount < 10) {
+          item.style.display = 'grid';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      } else {
+        // 如果选择了特定年份，或者正在搜索，则显示所有匹配项
+        item.style.display = 'grid';
+      }
+    } else {
+      item.style.display = 'none';
     }
+  });
+}
 
     searchInput.addEventListener('input', filter);
     yearBtns.forEach(btn => {
