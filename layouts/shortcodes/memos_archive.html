@@ -2,10 +2,10 @@
   <div class="archive-controls">
     <input type="text" id="m-search" placeholder="搜索动态内容..." autocomplete="off">
     <div id="year-filters">
-      <button class="year-btn active" data-year="all">全部</button>
+      <button class="year-btn active" data-year="all">最近10条</button>
       {{ $allMemos := (where .Site.RegularPages "Section" "memos_archive") }}
       {{ $years := slice }}
-      {{ range $allMemos }}
+      {{ range (first 10 $allMemos.ByDate.Reverse) }}
         {{ $years = $years | append (.Date.Format "2006") }}
       {{ end }}
       {{ range ($years | uniq) }}
