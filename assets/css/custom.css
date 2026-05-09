@@ -1,0 +1,597 @@
+/* 移除字体导入 */
+:root {
+    --width: 720px;
+    --font-main: sans-serif;
+    /* 改为系统默认字体 */
+    --font-secondary: sans-serif;
+    /* 改为系统默认字体 */
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color: #8b6fcb;
+    --code-background-color: #c9def2;
+    --code-color: #222;
+    --blockquote-color: #222;
+}
+
+/* 全局盒模型修正 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ===== 滚动条美化 ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(50, 115, 220, 0.4);
+    background-clip: content-box;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #01242e;
+        --heading-color: #eee;
+        --text-color: #ddd;
+        --link-color: #8cc2dd;
+        --visited-color: #8b6fcb;
+        --code-background-color: #000;
+        --code-color: #ddd;
+        --blockquote-color: #ccc;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    * {
+        scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+}
+
+body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-image: url("https://cdn.jsdelivr.net/gh/nightola/blog-moments@main/blog-background.webp");
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    background-blend-mode: overlay;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+    scroll-behavior: smooth;
+    min-height: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgba(0, 0, 0, 0.7);
+        background-blend-mode: multiply;
+    }
+}
+
+/* 导航栏优化 */
+nav {
+    margin-top: 0px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 4px;
+}
+
+nav a {
+    text-decoration: none;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+nav a:hover {
+    background-color: rgba(50, 115, 220, 0.1);
+    color: var(--link-color);
+}
+
+@media (max-width: 768px) {
+    nav {
+        justify-content: center;
+    }
+
+    nav a {
+        font-size: 0.9em;
+        padding: 5px 8px;
+    }
+}
+
+/* 正文区域 */
+main {
+    line-height: 1.6;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 16px;
+    margin-top: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    main {
+        padding: 15px 10px;
+        border-radius: 12px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    main {
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* ===== 文章列表美化 ===== */
+ul.blog-posts {
+    list-style-type: none;
+    padding: 0;
+    margin: 1em 0;
+}
+
+ul.blog-posts li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+ul.blog-posts li:hover {
+    background: rgba(50, 115, 220, 0.08);
+    transform: translateX(5px);
+}
+
+ul.blog-posts li span {
+    flex: 0 0 115px;
+    /* 稍微加宽日期列 */
+    /* 修改日期字体为更好看的等宽字体 */
+    font-family: "JetBrains Mono", "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
+    font-size: 0.85em;
+    color: #888;
+    letter-spacing: 0.02em;
+    /* 增加一点点间距 */
+}
+
+ul.blog-posts li a {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+ul.blog-posts li a:visited {
+    color: var(--visited-color);
+}
+
+@media (max-width: 600px) {
+    ul.blog-posts li {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    ul.blog-posts li span {
+        flex: none;
+        margin-bottom: 4px;
+        font-size: 0.8em;
+    }
+}
+
+/* 基础样式优化 */
+h1 {
+    color: var(--heading-color);
+    /* 使用变量，适配暗色模式 */
+    font-size: 1.4em;
+    /* 降低基础字号 */
+    line-height: 1.3;
+    margin-top: 1.2em;
+}
+
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+    line-height: 1.5em;
+    margin-top: 2.2em;
+    margin-bottom: 4px;
+}
+
+h2 {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+blockquote {
+    color: #666;
+    padding-left: 3em;
+    border-left: 0.5em #EEE solid;
+}
+
+footer {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.title h1 {
+    font-size: 1.45rem !important;
+    /* 强制统一字号，防止被其他样式覆盖 */
+    line-height: 1.4 !important;
+    /* 增加行高，字多也不怕 */
+    margin-top: 10px !important;
+    /* 离顶部导航的距离 */
+    margin-bottom: 8px !important;
+    /* 离下面日期的距离 */
+    color: var(--heading-color) !important;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    /* 稍微收紧，更有精致感 */
+}
+
+code {
+    font-family: monospace;
+    padding: 2px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+}
+
+/* 优化后的毛玻璃目录样式 - 强制固定定位版本 */
+.table-of-contents {
+    /* 核心定位：使用 fixed 强制固定在浏览器窗口视口 */
+    /* 如果依然失效，请检查父元素是否有 transform, filter 或 perspective 属性 */
+    position: fixed !important;
+    top: 0px !important;
+    right: auto !important;
+    /* 这里的 calc 逻辑：50% 是中心，减去正文宽度一半(360px)再减去目录宽度和间距 */
+    left: calc(50% - 580px) !important;
+    width: 180px;
+    max-height: 80vh;
+    overflow-y: auto;
+
+    /* 核心毛玻璃效果：完全对齐 main 容器 */
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    /* 边框与阴影优化：对齐 main 的 16px 圆角 */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+
+    /* 内部间距控制：减少上方空白 */
+    padding: 0.8rem 0.8rem 1.2rem 0.8rem;
+
+    font-size: 0.9rem;
+    z-index: 99999 !important;
+    /* 最高优先级层级 */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    /* 确保不受容器裁剪影响 */
+    margin: 0 !important;
+}
+
+/* 目录标题：居中且紧凑 */
+.table-of-contents .toc-title {
+    text-align: center;
+    margin-top: 0.1rem;
+    margin-bottom: 0.8rem;
+    font-weight: bold;
+    color: var(--heading-color);
+    font-size: 1rem;
+}
+
+/* 列表容器 */
+.table-of-contents ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* 列表项 */
+.table-of-contents li {
+    margin-bottom: 4px;
+}
+
+/* 链接样式 */
+.table-of-contents a {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* 悬停效果：同步博客导航交互 */
+.table-of-contents a:hover {
+    background-color: rgba(50, 115, 220, 0.1);
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+/* 暗色模式适配：完全对齐博客 main 的深色风格 */
+@media (prefers-color-scheme: dark) {
+    .table-of-contents {
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* 移动端逻辑 */
+@media (max-width: 1024px) {
+    .table-of-contents {
+        transform: translateX(150%) !important;
+        opacity: 0 !important;
+        pointer-events: none;
+    }
+
+    .table-of-contents.active {
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto;
+    }
+}
+
+/* 滚动条美化 */
+.table-of-contents::-webkit-scrollbar {
+    width: 4px;
+}
+
+.table-of-contents::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .table-of-contents::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* ===== 图片防溢出与美化 ===== */
+img {
+    max-width: 100%;
+    /* 新增：限制图片最高占屏幕高度的 70%，防止电脑端长图过载 */
+    max-height: 70vh;
+    /* 新增：配合 max-height，确保图片缩放时不失真 */
+    object-fit: contain;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    /* 增加上下间距，强化边界感 */
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease;
+}
+
+/* * 核心布局代码 
+         * 使用 Flexbox 实现自动流式布局
+         */
+.image-gallery {
+    display: flex;
+    /* 启用弹性布局 */
+    flex-wrap: wrap;
+    /* 允许内容换行 */
+    gap: 15px;
+    /* 图片之间的间距（边界感） */
+    margin-bottom: 20px;
+    /* 整个图组与下方文字的间距 */
+}
+
+.image-item {
+    flex: 1;
+    /* 让图片平分空间 */
+    min-width: 300px;
+    /* 关键阈值：当空间小于300px时，自动换行 */
+    box-sizing: border-box;
+}
+
+/* 图片样式 */
+.image-item img {
+    width: 100%;
+    /* 撑满容器宽度 */
+    height: auto;
+    /* 高度自适应 */
+    display: block;
+    /* 消除图片底部默认间隙 */
+    border-radius: 4px;
+    /* 稍微圆角，增加精致感 */
+    border: 1px solid #e0e0e0;
+    /* 极细的边框，强化边界 */
+}
+
+/* 图片说明文字 (可选) */
+.caption {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* * 移动端强制优化 (Media Query)
+         * 虽然 Flexbox 会自动换行，但这里强制在手机窄屏下变为单列
+         * 确保移动端体验一致性
+         */
+@media (max-width: 600px) {
+    .image-item {
+        flex: 100%;
+        /* 强制占满一行 */
+        min-width: 100%;
+    }
+}
+
+/* ===== 长图折叠查看器 ===== */
+.long-image-wrapper {
+    position: relative;
+    width: 100%;
+    /* 初始占据的最大高度，你可以根据喜好调整 */
+    max-height: 300px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 丝滑展开动画 */
+    cursor: pointer;
+}
+
+/* 展开状态：当鼠标悬停或元素获得焦点时 */
+.long-image-wrapper:hover,
+.long-image-wrapper:active {
+    max-height: 5000px;
+    /* 设一个足够大的值以容纳全图 */
+}
+
+.long-image-wrapper img {
+    width: 100%;
+    height: auto !important;
+    /* 强制覆盖全局的 70vh 限制 */
+    max-height: none !important;
+    display: block;
+    margin: 0 !important;
+    /* 移除内部间距 */
+    border-radius: 0;
+    /* 容器已经有圆角了 */
+    box-shadow: none;
+}
+
+/* 底部模糊遮罩：提示下方还有内容 */
+.long-image-wrapper::after {
+    content: "点击或悬停展开长图";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    /* 渐变遮罩，颜色适配你的毛玻璃背景 */
+    background: linear-gradient(transparent, rgba(255, 255, 255, 0.8));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+    font-size: 0.85rem;
+    color: var(--link-color);
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+/* 展开后隐藏遮罩 */
+.long-image-wrapper:hover::after {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+    .long-image-wrapper::after {
+        background: linear-gradient(transparent, rgba(1, 36, 46, 0.9));
+        color: var(--link-color);
+    }
+
+    .long-image-wrapper {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* 1. 精准定位：只修改带有 title 类的链接下的 h2 */
+a.title h2 {
+    font-size: 1.5rem !important; /* 调整这里来改变博客名字大小 */
+    font-weight: 800 !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    color: var(--heading-color) !important;
+    transition: color 0.3s ease;
+}
+
+/* 2. 移除标题链接默认的下划线 */
+a.title {
+    text-decoration: none !important;
+    display: inline-block; /* 保持块状逻辑 */
+}
+
+/* 3. 确保导航菜单（Home等）不受影响，保持精致小字 */
+nav a {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+/* 4. 移动端适配 */
+@media (max-width: 768px) {
+    a.title h2 {
+        font-size: 1.8rem !important;
+        text-align: center;
+    }
+}

@@ -1,0 +1,156 @@
+<div id="m-moments">
+  <div class="m-list">
+    <!-- 顶部导航 -->
+    <a href="/archives/" class="m-nav-btn">查看更多往期归档动态</a>
+
+    <!-- 自动抓取 content/memos 文件夹下的内容 -->
+    {{ $memos := (where .Site.RegularPages "Section" "memos") }}
+    <!-- 如果是页面A，只显示前10条 -->
+    {{ range first 10 $memos.ByDate.Reverse }}
+    <div class="m-i">
+      <div class="m-lt">
+        <img src="https://nightola.pages.dev/file/blog_avatar/1766510318687_avatar.webp" class="m-a">
+      </div>
+      <div class="m-rt">
+        <div class="m-id">亚离解星</div>
+        <div class="m-t">{{ .RawContent }}</div> <!-- 自动抓取正文 -->
+        
+        {{ with .Params.images }}
+        <div class="m-g" data-n="{{ len . }}">
+          {{ range . }}
+          <img src="{{ . }}">
+          {{ end }}
+        </div>
+        {{ end }}
+        
+        <div class="m-f">{{ .Date.Format "2006年01月02日" }}</div>
+      </div>
+    </div>
+    {{ end }}
+
+    <a href="/archives/" class="m-nav-btn" style="margin-top:10px">点击查看更多历史归档</a>
+  </div>
+</div>
+
+<!-- 这里放你原来的 <style> 标签内容，保持不变 -->
+<style>
+#m-moments {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: -apple-system, system-ui, "Helvetica Neue", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color: var(--text-color, #333);
+  padding: 20px 12px 10px; 
+  box-sizing: border-box;
+  text-align: left !important;
+}
+
+.m-i {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  padding: 15px 0 5px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  align-items: start !important; 
+}
+
+.m-lt {
+  line-height: 0;
+}
+
+.m-a { 
+  width: 42px !important; 
+  height: 42px !important; 
+  border-radius: 4px; 
+  object-fit: cover;
+  display: block !important;
+  margin: 0 !important;
+}
+
+.m-rt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left !important;
+}
+
+.m-id { 
+  color: #576b95; 
+  font-weight: 700; 
+  font-size: 15px; 
+  line-height: 1 !important; 
+  margin: 0 0 8px 0 !important;
+  padding-top: 1px; 
+}
+
+.m-t { 
+  font-size: 15px; 
+  line-height: 1.6; 
+  margin: 0 0 3px 0 !important; 
+  color: var(--text-color, #1a1a1a);
+  word-break: break-all;
+}
+
+.m-g { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 4px; 
+  width: 100%;
+  max-width: 450px; 
+  justify-content: flex-start !important;
+  margin-top: 8px !important;
+}
+
+.m-g img { 
+  object-fit: cover; 
+  border-radius: 4px;
+  margin: 0 !important; 
+}
+
+.m-g[data-n="1"] img { 
+  max-width: 240px !important; 
+  max-height: 240px !important; 
+  width: auto;
+  height: auto;
+}
+
+.m-g[data-n="2"] img, .m-g[data-n="4"] img { width: calc(50% - 4px); aspect-ratio: 1/1; }
+.m-g[data-n="3"] img, .m-g[data-n="6"] img, .m-g[data-n="9"] img { width: calc(33.3% - 4px); aspect-ratio: 1/1; }
+
+.m-f { 
+  font-size: 12px; 
+  color: #999; 
+  margin-top: 12px; 
+  text-align: left;
+}
+
+.m-nav-btn { 
+  display: block; 
+  text-align: center; 
+  padding: 10px; 
+  background: rgba(87,107,149,0.05);
+  color: #576b95 !important; 
+  border-radius: 6px; 
+  font-size: 13px; 
+  text-decoration: none !important;
+  transition: background 0.2s;
+  /* 重点：增加与下方动态的间距 */
+  margin-bottom: 25px;
+}
+
+.m-nav-btn:hover {
+  background: rgba(87,107,149,0.1);
+}
+
+@media (max-width: 600px) {
+  #m-moments { padding: 10px 15px 10px; }
+  .m-g { max-width: 100%; }
+  .m-g[data-n="1"] img { max-width: 85% !important; max-height: 300px !important; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .m-id { color: #7a8bb2; }
+  .m-i { border-bottom-color: rgba(255,255,255,0.08); }
+  .m-nav-btn { background: rgba(255,255,255,0.05); }
+}
+</style>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Messages on ･✦ Nightola-227 FM ✦･</title>
+    <link>http://localhost:1313/messages/</link>
+    <description>Recent content in Messages on ･✦ Nightola-227 FM ✦･</description>
+    <generator>Hugo</generator>
+    <language>en-US</language>
+    <copyright>Copyright © 2020, Jane Doe.</copyright>
+    <lastBuildDate>Fri, 08 May 2026 20:20:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/messages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>http://localhost:1313/messages/msg-001/</link>
+      <pubDate>Fri, 08 May 2026 20:20:00 +0800</pubDate>
+      <guid>http://localhost:1313/messages/msg-001/</guid>
+      <description>&lt;p&gt;这是留言的具体内容，支持换行。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
