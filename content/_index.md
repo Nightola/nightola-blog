@@ -52,12 +52,12 @@ weight = 1
       <h2 class="title-with-icon">📸 精选照片</h2>
     </div>
     <div class="square-gallery">
-      <img src="https://pic1.imgdb.cn/item/69257e7c3203f7be0031fca9.jpg" alt="1" loading="lazy">
-      <img src="https://pic1.imgdb.cn/item/694689df29a616e52861bf1b.jpg" alt="2" loading="lazy">
-      <img src="https://pic1.imgdb.cn/item/6925caec3203f7be0032cc00.jpg" alt="3" loading="lazy">
-      <img src="https://pic1.imgdb.cn/item/6925cebc3203f7be0032d3a8.jpg" alt="4" loading="lazy">
-      <img src="https://pic1.imgdb.cn/item/6925ce493203f7be0032d2d7.jpg" alt="5" loading="lazy">
-      <img src="https://pic1.imgdb.cn/item/69262e0a3203f7be00331dc0.jpg" alt="6" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339243524_compressed_1778338771801.webp" alt="1" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339240980_compressed_1778339014660.webp" alt="2" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339242319_compressed_1778339014735.webp" alt="3" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339247705_compressed_1778339014805.webp" alt="4" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339244898_compressed_1778339014897.webp" alt="5" loading="lazy">
+      <img src="https://nightola.pages.dev/file/blog_memos/1778339246275_compressed_1778339014962.webp" alt="6" loading="lazy">
     </div>
   </section>
 
