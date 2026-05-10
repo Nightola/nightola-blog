@@ -13,6 +13,7 @@
     .form-panel input, .form-panel textarea { width: 100%; background: rgba(255, 255, 255, .08); border: 1px solid rgba(128, 128, 128, .3); color: inherit; padding: 8px; margin-bottom: 8px; border-radius: 6px; font-family: inherit; font-size: .9em }
     .form-panel button { width: 100%; background: rgba(31, 41, 55, .9); color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: .3s }
     @media(prefers-color-scheme:dark) { .form-panel button { background: rgba(243, 244, 246, .9); color: #111827 } }
+    
     .friends-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 25px 0 40px }
     .friend-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, .03); border-radius: 10px; border: 1px solid var(--accent-op); transition: all .3s; text-decoration: none; color: inherit }
     .friend-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .08); border-color: rgba(128, 128, 128, .5) }
@@ -22,8 +23,9 @@
     .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
     .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
     
+    /* 留言区域 - 彻底删除所有 counter 相关样式 */
     .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op) }
-    .gb-floor-tag { position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800; color: inherit }
+    .gb-floor-tag { position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800 }
     .gb-meta { padding: 0 15px; margin-bottom: 5px }
     .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px }
     .gb-time { opacity: .4; font-size: .75em }
@@ -76,6 +78,7 @@
 </div>
 
 <div class="friends-container">
+    <!-- 友链列表保持不变 -->
     <a href="https://byte.otter.homes/" class="friend-card" target="_blank">
         <div class="friend-avatar"><img src="https://pic1.imgdb.cn/item/6470cc22f024cca173f187cb.png"></div>
         <div class="friend-info"><span class="friend-name">Horace's Holt</span><div class="friend-desc">个人博客与技术分享</div></div>
@@ -98,13 +101,14 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{/* 强制按 floor 参数数值进行倒序排列，最大的在最上面 */}}
-    {{ $sorted_msgs := sort $msgs "Params.floor" "desc" }}
-    {{ $paginator := .Paginate $sorted_msgs 10 }}
+    {{/* 直接对所有页面进行数值排序，desc 表示从大到小 */}}
+    {{ $sorted := sort $msgs "Params.floor" "desc" }}
+    {{/* 分页处理排序后的结果 */}}
+    {{ $paginator := .Paginate $sorted 10 }}
     
     {{ range $paginator.Pages }}
     <div class="gb-post">
-        {{/* 显式显示 Front Matter 里的 floor */}}
+        {{/* 关键点：这里直接读取 md 中的 floor 参数 */}}
         <span class="gb-floor-tag">#{{ .Params.floor }}F</span>
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
