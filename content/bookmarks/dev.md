@@ -10,4 +10,7 @@ items:
   - name: "Cloudflare"
     url: "https://dash.cloudflare.com"
     icon: "https://nightola.pages.dev/file/blog_websvg/1778422702248_a4abdd44-517d-4994-bad9-2a50624b9324.png"
+  - name: "Sanyue ImgHub（按照教程自搭的）"
+    url: "https://nightola.pages.dev/"
+    icon: "https://nightola.pages.dev/file/blog_websvg/1778422702248_a4abdd44-517d-4994-bad9-2a50624b9324.png"
 ---
