@@ -21,4 +21,8 @@ items:
     url: "https://towebp.app/"
     icon: "https://nightola.pages.dev/file/blog_websvg/1778436465179_towebp.app.png"
     desc: "转webp很方便"
+  - name: "Gemini"
+    url: "https://gemini.google.com/"
+    icon: "https://nightola.pages.dev/file/blog_websvg/1778437162663_gemini.google.ico"
+    desc: "本次搭建博客依靠的AI助手，大部分情况下都不错"
 ---
