@@ -23,8 +23,9 @@
     .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
     
     /* 留言区域 */
-    .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op); counter-increment: floor }
-    .gb-post::after { content: "#" counter(floor) "F"; position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800 }
+    .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op) }
+    /* 这里改用手动楼层显示 */
+    .gb-floor-tag { position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800 }
     .gb-meta { padding: 0 15px; margin-bottom: 5px }
     .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px }
     .gb-time { opacity: .4; font-size: .75em }
@@ -41,7 +42,6 @@
     @media(max-width:480px) { .friends-container { grid-template-columns: 1fr } }
 </style>
 
-<!-- 内容头部、申请表单部分保持不变 -->
 <div class="community-header">
     <h2 class="community-title">🌌 星岛与树洞</h2>
     <p class="community-subtitle">交换星图，或者留下一段频率。</p>
@@ -77,7 +77,6 @@
     </form>
 </div>
 
-<!-- 友链部分保持不变 -->
 <div class="friends-container">
     <a href="https://byte.otter.homes/" class="friend-card" target="_blank">
         <div class="friend-avatar"><img src="https://pic1.imgdb.cn/item/6470cc22f024cca173f187cb.png"></div>
@@ -93,10 +92,7 @@
     </a>
     <a href="https://yuki12720.org/" class="friend-card" target="_blank">
         <div class="friend-avatar"><img src="https://yuki12720.org/img/yoko.jpg"></div>
-        <div class="friend-info">
-            <span class="friend-name">sea of solitude</span>
-            <div class="friend-desc">一个普通的生活博客</div>
-        </div>
+        <div class="friend-info"><span class="friend-name">sea of solitude</span><div class="friend-desc">一个普通的生活博客</div></div>
     </a>
 </div>
 
@@ -104,11 +100,12 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{/* 使用 ByDate 正序排列：最早的排在最上面 */}}
-    {{ $paginator := .Paginate ($msgs.ByDate) 10 }}
+    {{/* 核心修改：按 md 中的 floor 参数倒序排列，确保大楼层在最上面 */}}
+    {{ $paginator := .Paginate ($msgs.ByParam "floor" | default .Date).Reverse 10 }}
     
     {{ range $paginator.Pages }}
     <div class="gb-post">
+        <span class="gb-floor-tag">#{{ .Params.floor | default "0" }}F</span>
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
             <span class="gb-time">{{ .Date.Format "2006-01-02 15:04" }}</span>
