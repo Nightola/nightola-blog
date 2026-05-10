@@ -81,6 +81,10 @@ slug = "low-end-android-app"
   </div>
 </div>
 
+# 低配安卓应用
+
+## 备用机配置参考
+
 ## 📦 应用推荐
 
 资源密码：fkx1
