@@ -280,7 +280,7 @@ footer {
     /* 强制统一字号，防止被其他样式覆盖 */
     line-height: 1.4 !important;
     /* 增加行高，字多也不怕 */
-    margin-top: 10px !important;
+    margin-top: 1px !important;
     /* 离顶部导航的距离 */
     margin-bottom: 8px !important;
     /* 离下面日期的距离 */
