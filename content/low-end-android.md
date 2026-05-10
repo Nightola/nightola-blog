@@ -3,6 +3,10 @@ title = "低配安卓软件"
 slug = "low-end-android-app"
 +++
 
+# 低配安卓应用
+
+## 备用机配置参考
+
 <style>
 :root {
   --accent-color: #3b82f6;
@@ -80,10 +84,6 @@ slug = "low-end-android-app"
     </ul>
   </div>
 </div>
-
-# 低配安卓应用
-
-## 备用机配置参考
 
 ## 📦 应用推荐
 
