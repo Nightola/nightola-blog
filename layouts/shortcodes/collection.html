@@ -1,0 +1,11 @@
+<div class="col-grid">
+  {{ range (where .Site.RegularPages "Section" "collection") }}
+  <a href="{{ .Params.link | default .RelPermalink }}" class="col-card">
+    <div class="col-icon">{{ .Params.icon | default "📄" }}</div>
+    <div class="col-content">
+      <div class="col-title">{{ .Title }}</div>
+      <div class="col-desc">{{ .Params.description }}</div>
+    </div>
+  </a>
+  {{ end }}
+</div>
