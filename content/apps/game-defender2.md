@@ -1,0 +1,8 @@
+---
+title: "守卫者2"
+icon: "https://nightola.pages.dev/file/blog_post/1768919536338_Defender_II_icon.png"
+package: "com.droidhen.defender2"
+download_url: "https://wwaxn.lanzout.com/ibryn3bwh6qb"
+description: "冷门但是对个人极其经典的塔防游戏。联机pk功能到现在也能玩，估计应该都是机器人吧（？）"
+weight: 19
+---
