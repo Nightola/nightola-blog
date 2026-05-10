@@ -1,13 +1,13 @@
 <div class="app-list-container">
   {{ $apps := ($.Site.GetPage "section" "apps").Pages }}
-  {{/* 使用 .ByWeight 排序，你可以在 MD 里设置 weight: 1, 2, 3 来控制顺序 */}}
+  {{/* 依然保留 ByWeight 排序逻辑 */}}
   {{ range $apps.ByWeight }}
   <div class="app-item">
     <img src="{{ .Params.icon }}" class="app-icon">
     <div class="app-content-box">
       <div class="app-title-row">
-        {{/* 这里的 printf 将 weight 格式化为 001 这种三位形式 */}}
-        <span class="app-title"><small style="opacity: 0.5; margin-right: 4px;">#{{ printf "%03d" .Weight }}</small> {{ .Title }}</span>
+        {{/* 这里去掉了编号显示，只保留标题 */}}
+        <span class="app-title">{{ .Title }}</span>
         <a href="{{ .Params.download_url }}" target="_blank" class="download-btn">下载</a>
       </div>
       <span class="app-package">{{ .Params.package }}</span>
@@ -46,7 +46,6 @@
   margin-bottom: 1px;
 }
 .app-title { font-weight: 600; font-size: 1em; color: var(--text-main); line-height: 1.2; }
-.app-title small { font-family: monospace; font-weight: normal; } /* 让编号看起来更整齐 */
 .app-package { font-size: 0.75em; color: var(--text-sub); line-height: 1.2; margin-bottom: 6px; }
 .download-btn {
   background: var(--btn-bg);
