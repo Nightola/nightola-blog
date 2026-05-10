@@ -22,10 +22,8 @@
     .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
     .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
     
-    /* 留言区域 */
     .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op) }
-    /* 这里改用手动楼层显示 */
-    .gb-floor-tag { position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800 }
+    .gb-floor-tag { position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800; color: inherit }
     .gb-meta { padding: 0 15px; margin-bottom: 5px }
     .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px }
     .gb-time { opacity: .4; font-size: .75em }
@@ -100,12 +98,14 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{/* 核心修改：按 md 中的 floor 参数倒序排列，确保大楼层在最上面 */}}
-    {{ $paginator := .Paginate ($msgs.ByParam "floor" | default .Date).Reverse 10 }}
+    {{/* 强制按 floor 参数数值进行倒序排列，最大的在最上面 */}}
+    {{ $sorted_msgs := sort $msgs "Params.floor" "desc" }}
+    {{ $paginator := .Paginate $sorted_msgs 10 }}
     
     {{ range $paginator.Pages }}
     <div class="gb-post">
-        <span class="gb-floor-tag">#{{ .Params.floor | default "0" }}F</span>
+        {{/* 显式显示 Front Matter 里的 floor */}}
+        <span class="gb-floor-tag">#{{ .Params.floor }}F</span>
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
             <span class="gb-time">{{ .Date.Format "2006-01-02 15:04" }}</span>
