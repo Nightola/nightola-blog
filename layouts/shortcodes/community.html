@@ -1,278 +1,41 @@
 <style>
-    :root {
-        --accent-op: rgba(128, 128, 128, .2)
-    }
+    :root { --accent-op: rgba(128, 128, 128, .2) }
+    .community-header { margin-bottom: 20px }
+    .community-title { margin: 0 0 8px 0 !important; line-height: 1.2; font-size: 1.5em; font-weight: 800 }
+    .community-subtitle { margin-bottom: 20px; opacity: .7; font-size: .85em; letter-spacing: .5px }
+    .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px }
+    .tab-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--accent-op); background: rgba(255, 255, 255, .05); color: inherit; cursor: pointer; font-weight: 700; font-size: .85em; transition: all .3s; display: flex; align-items: center; justify-content: center; gap: 6px }
+    .tab-btn.active { background: var(--text-color, #333); color: #fff; border-color: var(--text-color, #333) }
+    @media(prefers-color-scheme:dark) { .tab-btn.active { background: #f3f4f6; color: #111827 } }
+    .form-panel { display: none; margin-bottom: 25px; padding: 15px; background: rgba(255, 255, 255, .05); border-radius: 10px; border: 1px solid var(--accent-op); animation: fadeIn .3s ease }
+    .form-panel.active { display: block }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px) } to { opacity: 1; transform: translateY(0) } }
+    .form-panel input, .form-panel textarea { width: 100%; background: rgba(255, 255, 255, .08); border: 1px solid rgba(128, 128, 128, .3); color: inherit; padding: 8px; margin-bottom: 8px; border-radius: 6px; font-family: inherit; font-size: .9em }
+    .form-panel button { width: 100%; background: rgba(31, 41, 55, .9); color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: .3s }
+    @media(prefers-color-scheme:dark) { .form-panel button { background: rgba(243, 244, 246, .9); color: #111827 } }
+    .friends-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 25px 0 40px }
+    .friend-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, .03); border-radius: 10px; border: 1px solid var(--accent-op); transition: all .3s; text-decoration: none; color: inherit }
+    .friend-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .08); border-color: rgba(128, 128, 128, .5) }
+    .friend-avatar { width: 42px !important; height: 42px !important; border-radius: 8px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(128, 128, 128, .2); display: flex !important; align-items: center; justify-content: center; background: rgba(128, 128, 128, .05) }
+    .friend-avatar img { width: 100% !important; height: 100% !important; object-fit: cover !important; margin: 0 !important; display: block !important; border-radius: 0 !important }
+    .friend-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center }
+    .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
+    .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
+    .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op) }
+    .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px; padding: 0 15px }
+    .gb-time { opacity: .4; font-size: .75em }
+    .gb-content { margin-top: 8px; line-height: 1.7; opacity: .9; font-size: .95em; white-space: pre-wrap; word-break: break-all; padding: 0 15px }
+    .gb-reply-box { margin: 12px 15px 0 25px; padding: 4px 0 4px 15px; border-left: 2px solid var(--accent-op); font-size: .88em }
+    .gb-reply-author { font-weight: 700; margin-right: 6px }
+    .gb-reply-author::after { content: "(博主)"; font-size: .8em; opacity: .5; margin-left: 2px }
+    
+    /* 分页样式 */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 20px; padding: 30px 0; font-size: .85em }
+    .pagination a { text-decoration: none; color: inherit; opacity: .6; transition: .3s; border: 1px solid var(--accent-op); padding: 5px 12px; border-radius: 6px }
+    .pagination a:hover { opacity: 1; background: rgba(255,255,255,.05) }
+    .page-number { opacity: .4; letter-spacing: 1px }
 
-    .community-header {
-        margin-bottom: 20px
-    }
-
-    .community-title {
-        margin: 0 0 8px 0 !important;
-        line-height: 1.2;
-        font-size: 1.5em;
-        font-weight: 800
-    }
-
-    .community-subtitle {
-        margin-bottom: 20px;
-        opacity: .7;
-        font-size: .85em;
-        letter-spacing: .5px
-    }
-
-    .tab-buttons {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px
-    }
-
-    .tab-btn {
-        flex: 1;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid var(--accent-op);
-        background: rgba(255, 255, 255, .05);
-        color: inherit;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: .85em;
-        transition: all .3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px
-    }
-
-    .tab-btn.active {
-        background: var(--text-color, #333);
-        color: #fff;
-        border-color: var(--text-color, #333)
-    }
-
-    @media(prefers-color-scheme:dark) {
-        .tab-btn.active {
-            background: #f3f4f6;
-            color: #111827
-        }
-    }
-
-    .form-panel {
-        display: none;
-        margin-bottom: 25px;
-        padding: 15px;
-        background: rgba(255, 255, 255, .05);
-        border-radius: 10px;
-        border: 1px solid var(--accent-op);
-        animation: fadeIn .3s ease
-    }
-
-    .form-panel.active {
-        display: block
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-5px)
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0)
-        }
-    }
-
-    .form-panel input,
-    .form-panel textarea {
-        width: 100%;
-        background: rgba(255, 255, 255, .08);
-        border: 1px solid rgba(128, 128, 128, .3);
-        color: inherit;
-        padding: 8px;
-        margin-bottom: 8px;
-        border-radius: 6px;
-        font-family: inherit;
-        font-size: .9em
-    }
-
-    .form-panel button {
-        width: 100%;
-        background: rgba(31, 41, 55, .9);
-        color: #fff;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 700;
-        transition: .3s
-    }
-
-    @media(prefers-color-scheme:dark) {
-        .form-panel button {
-            background: rgba(243, 244, 246, .9);
-            color: #111827
-        }
-    }
-
-    .friends-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 12px;
-        margin: 25px 0 40px
-    }
-
-    .friend-card {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px;
-        background: rgba(255, 255, 255, .03);
-        border-radius: 10px;
-        border: 1px solid var(--accent-op);
-        transition: all .3s;
-        text-decoration: none;
-        color: inherit
-    }
-
-    .friend-card:hover {
-        transform: translateY(-2px);
-        background: rgba(255, 255, 255, .08);
-        border-color: rgba(128, 128, 128, .5)
-    }
-
-    .friend-avatar {
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 8px;
-        overflow: hidden;
-        flex-shrink: 0;
-        border: 1px solid rgba(128, 128, 128, .2);
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        background: rgba(128, 128, 128, .05)
-    }
-
-    .friend-avatar img {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        margin: 0 !important;
-        display: block !important;
-        border-radius: 0 !important
-    }
-
-    .friend-info {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center
-    }
-
-    .friend-name {
-        font-weight: 700;
-        font-size: .92em;
-        display: block;
-        line-height: 1.4
-    }
-
-    .friend-desc {
-        font-size: .78em;
-        opacity: .7;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.4
-    }
-
-    .gb-post {
-        position: relative;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--accent-op);
-        counter-increment: floor
-    }
-
-    .gb-post::after {
-        content: "#" counter(floor)"F";
-        position: absolute;
-        top: 8px;
-        right: 5px;
-        font-size: .75em;
-        opacity: .4;
-        font-weight: 800
-    }
-
-    .gb-author {
-        font-weight: 700;
-        font-size: .92em;
-        margin-right: 8px;
-        padding: 0 12px
-    }
-
-    .gb-time {
-        opacity: .4;
-        font-size: .75em
-    }
-
-    .gb-content {
-        margin-top: 4px;
-        line-height: 1.7;
-        opacity: .9;
-        font-size: .95em;
-        white-space: pre-wrap;
-        word-break: break-all;
-        padding: 0 15px
-    }
-
-    .gb-reply-box {
-        margin: 8px 15px 0 25px;
-        padding: 4px 0 4px 15px;
-        border-left: 2px solid var(--accent-op);
-        font-size: .88em
-    }
-
-    .gb-reply-author {
-        font-weight: 700;
-        margin-right: 6px
-    }
-
-    .gb-reply-author::after {
-        content: "(博主)";
-        font-size: .8em;
-        opacity: .5;
-        margin-left: 2px
-    }
-
-    .gb-footer-status {
-        text-align: center;
-        padding: 30px 0;
-        opacity: .3;
-        font-size: .75em;
-        display: flex;
-        align-items: center;
-        gap: 10px
-    }
-
-    .gb-footer-status::after,
-    .gb-footer-status::before {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(to var(--d, right), rgba(128, 128, 128, .3), transparent);
-        --d: left
-    }
-
-    .gb-footer-status::after {
-        --d: right
-    }
-
-    @media(max-width:480px) {
-        .friends-container {
-            grid-template-columns: 1fr
-        }
-    }
+    @media(max-width:480px) { .friends-container { grid-template-columns: 1fr } }
 </style>
 
 <div class="community-header">
@@ -336,7 +99,9 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{ range $msgs.ByDate.Reverse }}
+    {{ $paginator := .Paginate ($msgs.ByPublishDate) 10 }}
+    
+    {{ range $paginator.Pages }}
     <div class="gb-post">
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
@@ -358,7 +123,20 @@
     {{ end }}
 </div>
 
-<div class="gb-footer-status">到底啦</div>
+<!-- 分页导航 -->
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}">上一页</a>
+    {{ end }}
+    
+    <span class="page-number">{{ $paginator.PageNumber }} / {{ $paginator.TotalPages }}</span>
+    
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}">下一页</a>
+    {{ end }}
+</nav>
+{{ end }}
 
 <script>
 function switchTab(t){
