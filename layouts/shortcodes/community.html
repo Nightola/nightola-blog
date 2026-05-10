@@ -21,15 +21,18 @@
     .friend-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center }
     .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
     .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
-    .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op) }
-    .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px; padding: 0 15px }
+    
+    /* 留言区域 */
+    .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op); counter-increment: floor }
+    .gb-post::after { content: "#" counter(floor) "F"; position: absolute; top: 15px; right: 10px; font-size: .75em; opacity: .3; font-weight: 800 }
+    .gb-meta { padding: 0 15px; margin-bottom: 5px }
+    .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px }
     .gb-time { opacity: .4; font-size: .75em }
-    .gb-content { margin-top: 8px; line-height: 1.7; opacity: .9; font-size: .95em; white-space: pre-wrap; word-break: break-all; padding: 0 15px }
+    .gb-content { line-height: 1.7; opacity: .9; font-size: .95em; white-space: pre-wrap; word-break: break-all; padding: 0 15px }
     .gb-reply-box { margin: 12px 15px 0 25px; padding: 4px 0 4px 15px; border-left: 2px solid var(--accent-op); font-size: .88em }
     .gb-reply-author { font-weight: 700; margin-right: 6px }
     .gb-reply-author::after { content: "(博主)"; font-size: .8em; opacity: .5; margin-left: 2px }
     
-    /* 分页样式 */
     .pagination { display: flex; justify-content: center; align-items: center; gap: 20px; padding: 30px 0; font-size: .85em }
     .pagination a { text-decoration: none; color: inherit; opacity: .6; transition: .3s; border: 1px solid var(--accent-op); padding: 5px 12px; border-radius: 6px }
     .pagination a:hover { opacity: 1; background: rgba(255,255,255,.05) }
@@ -38,6 +41,7 @@
     @media(max-width:480px) { .friends-container { grid-template-columns: 1fr } }
 </style>
 
+<!-- 内容头部、申请表单部分保持不变 -->
 <div class="community-header">
     <h2 class="community-title">🌌 星岛与树洞</h2>
     <p class="community-subtitle">交换星图，或者留下一段频率。</p>
@@ -73,6 +77,7 @@
     </form>
 </div>
 
+<!-- 友链部分保持不变 -->
 <div class="friends-container">
     <a href="https://byte.otter.homes/" class="friend-card" target="_blank">
         <div class="friend-avatar"><img src="https://pic1.imgdb.cn/item/6470cc22f024cca173f187cb.png"></div>
@@ -99,7 +104,8 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{ $paginator := .Paginate ($msgs.ByPublishDate) 10 }}
+    {{/* 使用 ByDate 正序排列：最早的排在最上面 */}}
+    {{ $paginator := .Paginate ($msgs.ByDate) 10 }}
     
     {{ range $paginator.Pages }}
     <div class="gb-post">
@@ -123,15 +129,12 @@
     {{ end }}
 </div>
 
-<!-- 分页导航 -->
 {{ if gt $paginator.TotalPages 1 }}
 <nav class="pagination">
     {{ if $paginator.HasPrev }}
     <a href="{{ $paginator.Prev.URL }}">上一页</a>
     {{ end }}
-    
     <span class="page-number">{{ $paginator.PageNumber }} / {{ $paginator.TotalPages }}</span>
-    
     {{ if $paginator.HasNext }}
     <a href="{{ $paginator.Next.URL }}">下一页</a>
     {{ end }}
