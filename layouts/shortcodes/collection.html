@@ -78,7 +78,7 @@
 </style>
 
 <div class="col-grid">
-  {{ range (where .Site.RegularPages "Section" "collection") }}
+  {{ range (where .Site.RegularPages "Section" "collection").ByWeight }}
 <a href="{{ .Params.link | default .RelPermalink }}" class="col-card" {{ if and (isset .Params "link") (hasPrefix .Params.link "http") }}target="_blank" rel="noopener"{{ end }}>
     <div class="col-icon">{{ .Params.icon | default "🔖" }}</div>
     <div class="col-content">
