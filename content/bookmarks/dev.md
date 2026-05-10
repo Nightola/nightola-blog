@@ -15,6 +15,6 @@ items:
     desc: "本博客的部署于此，有一个数据库正在使用"
   - name: "Sanyue ImgHub"
     url: "https://nightola.pages.dev/"
-    icon: "https://nightola.pages.dev/file/blog_websvg/1778422702248_a4abdd44-517d-4994-bad9-2a50624b9324.png"
+    icon: "https://nightola.pages.dev/file/blog_websvg/1778436140488_imghub.png"
     desc: "按照官方教程自搭的"
 ---
