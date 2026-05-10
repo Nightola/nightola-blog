@@ -16,5 +16,9 @@ items:
   - name: "Sanyue ImgHub"
     url: "https://nightola.pages.dev/"
     icon: "https://nightola.pages.dev/file/blog_websvg/1778436140488_imghub.png"
-    desc: "按照官方教程自搭的，自用"
+    desc: "按照官方教程自搭的图床，自用"
+  - name: "ToWebP.app"
+    url: "https://towebp.app/"
+    icon: "https://nightola.pages.dev/file/blog_websvg/1778436465179_towebp.app.png"
+    desc: "转webp很方便"
 ---
