@@ -79,7 +79,7 @@
 
 <div class="col-grid">
   {{ range (where .Site.RegularPages "Section" "collection") }}
-<a href="{{ .Params.link | default .RelPermalink }}" class="col-card" {{ if .Params.external }}target="_blank"{{ end }}>
+<a href="{{ .Params.link | default .RelPermalink }}" class="col-card" {{ if and (isset .Params "link") (hasPrefix .Params.link "http") }}target="_blank" rel="noopener"{{ end }}>
     <div class="col-icon">{{ .Params.icon | default "🔖" }}</div>
     <div class="col-content">
       <h4 class="col-title">{{ .Title }}</h4>
