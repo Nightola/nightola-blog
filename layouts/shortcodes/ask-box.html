@@ -29,7 +29,7 @@
   .ask-wrapper .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
   .ask-wrapper .qna-q-bubble:after { content: '+'; opacity: 0.3; transition: 0.2s; font-size: 18px; }
   .ask-wrapper .active.qna-item-bubble .qna-q-bubble:after { transform: rotate(45deg); opacity: 0.7; }
-  .ask-wrapper .qna-a-bubble { display: none; font-size: 13px; line-height: 1.7; padding-top: 12px; border-top: 1px dashed var(--ask-border); margin-top: 12px; }
+  .ask-wrapper .qna-a-bubble { display: none; font-size: 13px; line-height: 1.7; padding-top: 12px; border-top: 1px dashed var(--ask-border); margin-top: 12px; white-space: normal; word-break: break-all; }
   .ask-wrapper .active.qna-item-bubble .qna-a-bubble { display: block; }
 
   .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
@@ -67,18 +67,20 @@
 </div>
 
 <script>
-  // 强制转义函数：处理 \u003c 等所有编码干扰
-  function decodeHTML(html) {
+  // 处理各种干扰符号的核心函数
+  function cleanText(raw) {
+    if (!raw) return "";
     const txt = document.createElement("textarea");
-    txt.innerHTML = html;
-    return txt.value;
+    txt.innerHTML = raw;
+    let decoded = txt.value;
+    // 将字符形式的 \n 转换为真实的 HTML 换行标签
+    return decoded.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
   }
 
   const allData = [
     {{ range $answers.ByDate.Reverse }}
     {
       title: {{ .Title | jsonify }},
-      // 使用 Plain 避开 Hugo 渲染干扰，这是最干净的原始文本
       content: {{ .Plain | jsonify }},
       date: {{ .Date.Format "2006-01-02 15:04" | jsonify }}
     },
@@ -97,9 +99,9 @@
 
     listCont.innerHTML = pageData.map(item => `
       <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
-        <div class="qna-q-bubble"><span>${decodeHTML(item.title)}</span></div>
+        <div class="qna-q-bubble"><span>${cleanText(item.title)}</span></div>
         <div class="qna-a-bubble">
-          <div class="markdown-content">${decodeHTML(item.content)}</div>
+          <div class="markdown-content">${cleanText(item.content)}</div>
           <div style="margin-top:10px;font-size:11px;opacity:0.4;text-align:right">
             更新于 ${item.date}
           </div>
