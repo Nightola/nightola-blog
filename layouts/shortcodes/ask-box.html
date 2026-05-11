@@ -67,18 +67,18 @@
 </div>
 
 <script>
-  // 1. 清理函数：处理编码、换行，并去掉首尾引号
+  // 处理编码、换行，并彻底去掉首尾引号
   function cleanText(raw) {
     if (!raw) return "";
     const txt = document.createElement("textarea");
     txt.innerHTML = raw;
     let decoded = txt.value;
     
-    // 替换换行符并去掉首尾可能出现的双引号
+    // 替换转义的换行符，并去掉 jsonify 产生的首尾双引号
     return decoded
       .replace(/\\n/g, '<br>')
       .replace(/\n/g, '<br>')
-      .replace(/^"|"$/g, ''); // 这一行正则专门负责去掉字符串最前和最后的 " 符号
+      .replace(/^"|"$/g, ''); 
   }
 
   const allData = [
@@ -97,6 +97,8 @@
 
   function renderList() {
     const listCont = document.getElementById('qnaList');
+    if (!listCont) return;
+
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     const pageData = filteredData.slice(start, end);
@@ -107,7 +109,7 @@
         <div class="qna-a-bubble">
           <div class="markdown-content">${cleanText(item.content)}</div>
           <div style="margin-top:10px;font-size:11px;opacity:0.4;text-align:right">
-            更新于 ${item.date}
+            更新于 ${cleanText(item.date)}
           </div>
         </div>
       </div>
@@ -118,29 +120,54 @@
 
   function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-    document.getElementById('pageDisplay').innerText = `${currentPage} / ${totalPages}`;
-    document.getElementById('pageCtrl').style.display = filteredData.length <= pageSize ? 'none' : 'flex';
-    document.getElementById('prevPage').disabled = currentPage === 1;
-    document.getElementById('nextPage').disabled = currentPage === totalPages;
+    const displayEl = document.getElementById('pageDisplay');
+    const ctrlEl = document.getElementById('pageCtrl');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+
+    if (displayEl) displayEl.innerText = `${currentPage} / ${totalPages}`;
+    if (ctrlEl) ctrlEl.style.display = filteredData.length <= pageSize ? 'none' : 'flex';
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
   }
 
   function changePage(step) {
     currentPage += step;
     renderList();
-    document.getElementById('qnaSearch').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const searchEl = document.getElementById('qnaSearch');
+    if (searchEl) searchEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function handleSearch() {
-    const query = document.getElementById('query').value.toLowerCase(); // 如果你之前的输入框ID是qnaSearch，这里请对应
-    const searchVal = document.getElementById('qnaSearch') ? document.getElementById('qnaSearch').value.toLowerCase() : "";
+    const searchEl = document.getElementById('qnaSearch');
+    const query = searchEl ? searchEl.value.toLowerCase() : "";
     
     filteredData = allData.filter(item => 
-      item.title.toLowerCase().includes(searchVal) || 
-      item.content.toLowerCase().includes(searchVal)
+      item.title.toLowerCase().includes(query) || 
+      item.content.toLowerCase().includes(query)
     );
     currentPage = 1; 
     renderList();
   }
 
-  document.addEventListener('DOMContentLoaded', renderList);
+  document.addEventListener('DOMContentLoaded', () => {
+    renderList();
+
+    // 绑定通知切换逻辑
+    const notifyCheck = document.getElementById('newNotifyCheck');
+    if (notifyCheck) {
+      notifyCheck.addEventListener('change', function(e) {
+        const emailInput = document.getElementById('newEmailInput');
+        if (emailInput) emailInput.style.display = e.target.checked ? 'block' : 'none';
+      });
+    }
+
+    // 绑定提交演示逻辑
+    const submitBtn = document.getElementById('newSubmitQuestionBtn');
+    if (submitBtn) {
+      submitBtn.onclick = function() {
+        alert('提问已发送，请等待后台处理。');
+      };
+    }
+  });
 </script>
