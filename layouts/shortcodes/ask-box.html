@@ -1,139 +1,99 @@
 <style>
-  .ask-wrapper {
-    max-width: 850px;
-    margin: 20px auto;
-    color: var(--text-main, inherit);
-    --ask-card-bg: rgba(128, 128, 128, 0.05);
-    --ask-border: rgba(0, 0, 0, 0.08);
-    --ask-btn-bg: #1f2937;
-    --ask-btn-text: #ffffff;
+  :root {
+    --db-btn-bg: rgba(31, 41, 55, .9);
+    --db-btn-text: #fff;
+    --text-sub: #666;
+    --border-color: rgba(0, 0, 0, .08);
+    --card-bg: rgba(128, 128, 128, .04);
   }
-
   @media (prefers-color-scheme: dark) {
-    .ask-wrapper {
-      --ask-card-bg: rgba(255, 255, 255, 0.05);
-      --ask-border: rgba(255, 255, 255, 0.12);
-      --ask-btn-bg: #f3f4f6;
-      --ask-btn-text: #111827;
+    :root {
+      --db-btn-bg: rgba(243, 244, 246, .9);
+      --db-btn-text: #111827;
+      --text-sub: #bbb;
+      --border-color: rgba(255, 255, 255, .12);
+      --card-bg: rgba(255, 255, 255, .05);
     }
   }
 
-  .ask-wrapper .section-title { font-size: 1.1em; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-  .ask-wrapper .db-input { width: 100%; box-sizing: border-box; background: var(--ask-card-bg); border: 1px solid var(--ask-border); padding: 14px; border-radius: 14px; font-size: 14px; color: inherit; outline: 0; margin-bottom: 12px; }
-  .ask-wrapper .db-btn { width: 100%; background: var(--ask-btn-bg); color: var(--ask-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
-
-  .ask-wrapper .qna-item-bubble { background: var(--ask-card-bg); border: 1px solid var(--ask-border); border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; }
-  .ask-wrapper .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-  .ask-wrapper .qna-q-bubble:after { content: '+'; opacity: 0.3; transition: 0.2s; font-size: 18px; }
-  .ask-wrapper .active.qna-item-bubble .qna-q-bubble:after { transform: rotate(45deg); opacity: 0.7; }
-  
-  .ask-wrapper .qna-a-bubble { 
-    display: none; 
-    font-size: 13px; 
-    line-height: 1.7; 
-    padding-top: 12px; 
-    border-top: 1px dashed var(--ask-border); 
-    margin-top: 12px; 
-    white-space: pre-wrap; /* 关键：保留换行 */
-    word-break: break-word; 
-  }
-  .ask-wrapper .active.qna-item-bubble .qna-a-bubble { display: block; }
-
-  .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
-  .page-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--ask-border); background: var(--ask-card-bg); color: inherit; cursor: pointer; font-size: 13px; }
-  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .ask-container { max-width: 850px; margin: 0 auto; color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .section-title { font-size: 1.1em; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+  .db-input { width: 100%; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; font-size: 14px; color: inherit; outline: 0; margin-bottom: 12px; }
+  .qna-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .qna-check { font-size: 13px; display: flex; align-items: center; gap: 6px; opacity: .8; cursor: pointer; }
+  .db-btn { width: 100%; background: var(--db-btn-bg); color: var(--db-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
+  .qna-item-bubble { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; }
+  .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
+  .qna-q-bubble:after { content: '+'; opacity: .3; transition: .2s; }
+  .active.qna-item-bubble .qna-q-bubble:after { transform: rotate(45deg); opacity: .7; }
+  .qna-a-bubble { display: none; font-size: 13px; line-height: 1.7; color: var(--text-sub); padding-top: 12px; border-top: 1px dashed var(--border-color); margin-top: 12px; }
+  .active.qna-item-bubble .qna-a-bubble { display: block; }
 </style>
 
-<div class="ask-wrapper">
-  <section style="margin-bottom: 40px;">
-    <div class="section-title">📮 提问箱</div>
-    <textarea id="newQuestionInput" class="db-input" placeholder="输入内容..." rows="3"></textarea>
+<div class="ask-container">
+  <section class="card-item">
+    <div class="section-title">提问箱</div>
+    <textarea id="newQuestionInput" class="db-input" placeholder="输入问题..." rows="3"></textarea>
+    <div class="qna-options">
+      <label class="qna-check"><input type="checkbox" id="newPrivateReplyCheck"><span>不公开回复</span></label>
+      <label class="qna-check"><input type="checkbox" id="newNotifyCheck"><span>回复通知</span></label>
+    </div>
+    <input type="email" id="newEmailInput" class="db-input" placeholder="填写邮箱接收通知" style="display:none">
     <button id="newSubmitQuestionBtn" class="db-btn">发送提问</button>
-  </section>
 
-  <section>
     <div style="margin:30px 0 15px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-weight:800;font-size:1em">🔍 往期存档</span>
-      {{ $answers := where .Site.RegularPages "Section" "ask" }}
-      <span style="font-size:12px;opacity:.5">{{ len $answers }} 回复已送达</span>
+      <span id="qnaCount" style="font-size:12px;opacity:.5">0/0</span>
     </div>
-    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="handleSearch()">
-    <div id="qnaList"></div>
-    <div class="pagination-ctrl" id="pageCtrl">
-      <button class="page-btn" id="prevPage" onclick="changePage(-1)">上一页</button>
-      <span class="page-info" id="pageDisplay">1 / 1</span>
-      <button class="page-btn" id="nextPage" onclick="changePage(1)">下一页</button>
-    </div>
+    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="renderQna()">
+    <div id="qnaList">加载中...</div>
+    <button id="loadMoreBtn" class="db-btn" style="display:none;margin-top:10px;background:0 0;border:1px solid var(--border-color);color:inherit" onclick="loadMore()">加载更多内容</button>
   </section>
 </div>
 
 <script>
-  function cleanText(raw) {
-    if (!raw) return "";
-    // 1. 将 HTML 转义字符恢复，并将手动输入的 <br> 替换为换行符
-    let decoded = raw.replace(/<br\s*\/?>/gi, '\n');
-    const txt = document.createElement("textarea");
-    txt.innerHTML = decoded;
-    // 2. 去掉 jsonify 产生的外层引号并返回
-    return txt.value.replace(/^"|"$/g, ''); 
+(function() {
+  const Q_CFG = { u: 'nightola', r: 'blog-moments', b: 'main' };
+  const Q_URL = `https://ghproxy.net/https://raw.githubusercontent.com/${Q_CFG.u}/${Q_CFG.r}/${Q_CFG.b}/qna.json?t=${Date.now()}`;
+  let allQ = [], filteredQ = [], currentSize = 5;
+
+  async function initQna() {
+    try {
+      const r = await fetch(Q_URL);
+      const d = await r.json();
+      allQ = d.qna || [];
+      renderQna();
+    } catch (e) {
+      document.getElementById('qnaList').innerHTML = '数据加载失败';
+    }
   }
 
-  const allData = [
-    {{ range $answers.ByDate.Reverse }}
-    {
-      title: {{ .Title | jsonify }},
-      content: {{ .Plain | jsonify }},
-      date: {{ .Date.Format "2006-01-02 15:04" | jsonify }}
-    },
-    {{ end }}
-  ];
+  window.renderQna = function(append = false) {
+    const t = document.getElementById('qnaList');
+    const n = document.getElementById('qnaSearch').value.toLowerCase();
+    if (!append) { currentSize = 5; t.innerHTML = ""; }
+    
+    filteredQ = allQ.filter(x => x.q.toLowerCase().includes(n) || x.a.toLowerCase().includes(n));
+    
+    filteredQ.slice(append ? currentSize : 0, append ? currentSize + 5 : currentSize).forEach(item => {
+      const div = document.createElement("div");
+      div.className = "qna-item-bubble";
+      div.onclick = function() { this.classList.toggle("active"); };
+      div.innerHTML = `<div class="qna-q-bubble"><span>${item.q}</span></div><div class="qna-a-bubble"><div>${item.a}</div><div style="margin-top:10px;font-size:11px;opacity:.4;text-align:right">${item.time}</div></div>`;
+      t.appendChild(div);
+    });
 
-  let filteredData = [...allData];
-  let currentPage = 1;
-  const pageSize = 10;
+    if(append) currentSize += 5;
+    document.getElementById("qnaCount").textContent = `${Math.min(currentSize, filteredQ.length)}/${filteredQ.length}`;
+    document.getElementById("loadMoreBtn").style.display = currentSize >= filteredQ.length ? "none" : "block";
+  };
 
-  function renderList() {
-    const listCont = document.getElementById('qnaList');
-    if (!listCont) return;
+  window.loadMore = function() { renderQna(true); };
 
-    const start = (currentPage - 1) * pageSize;
-    const pageData = filteredData.slice(start, start + pageSize);
+  document.getElementById('newNotifyCheck').addEventListener('change', function(e) {
+    document.getElementById('newEmailInput').style.display = e.target.checked ? 'block' : 'none';
+  });
 
-    listCont.innerHTML = pageData.map(item => `
-      <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
-        <div class="qna-q-bubble"><span>${cleanText(item.title)}</span></div>
-        <div class="qna-a-bubble">${cleanText(item.content)}<div style="margin-top:15px;font-size:11px;opacity:0.4;text-align:right">更新于 ${cleanText(item.date)}</div></div>
-      </div>
-    `).join('');
-
-    updatePagination();
-  }
-
-  function updatePagination() {
-    const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-    const displayEl = document.getElementById('pageDisplay');
-    const ctrlEl = document.getElementById('pageCtrl');
-    if (displayEl) displayEl.innerText = `${currentPage} / ${totalPages}`;
-    if (ctrlEl) ctrlEl.style.display = filteredData.length <= pageSize ? 'none' : 'flex';
-    document.getElementById('prevPage').disabled = (currentPage === 1);
-    document.getElementById('nextPage').disabled = (currentPage === totalPages);
-  }
-
-  function changePage(step) {
-    currentPage += step;
-    renderList();
-    document.getElementById('qnaSearch').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function handleSearch() {
-    const query = document.getElementById('qnaSearch').value.toLowerCase();
-    filteredData = allData.filter(item => 
-      item.title.toLowerCase().includes(query) || 
-      item.content.toLowerCase().includes(query)
-    );
-    currentPage = 1; 
-    renderList();
-  }
-
-  document.addEventListener('DOMContentLoaded', renderList);
+  initQna();
+})();
 </script>
