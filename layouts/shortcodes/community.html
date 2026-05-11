@@ -22,6 +22,8 @@
 .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
 .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
 .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op); display: none; }
+/* 楼层样式修改：直接读取 Weight */
+.gb-floor { position: absolute; top: 15px; right: 5px; font-size: .75em; opacity: .4; font-weight: 800; }
 .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px; padding: 0 12px }
 .gb-time { opacity: .4; font-size: .75em }
 .gb-content { margin-top: 6px; line-height: 1.7; opacity: .9; font-size: .95em; white-space: pre-wrap; word-break: break-all; padding: 0 15px }
@@ -97,6 +99,7 @@
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
     {{ range $msgs.ByWeight.Reverse }}
     <div class="gb-post">
+        <div class="gb-floor">#{{ .Params.weight }}F</div>
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
             <span class="gb-time">{{ .Date.Format "2006-01-02 15:04" }}</span>
@@ -117,7 +120,6 @@
 </div>
 
 <div id="gb-pagination" class="gb-pagination"></div>
-
 <div class="gb-footer-status">到底啦</div>
 
 <script>
@@ -135,9 +137,8 @@ function switchTab(t){
     }
 }
 
-// 前端分页逻辑
 (function() {
-    const perPage = 10; // 每页显示数量
+    const perPage = 10;
     const list = document.getElementById('gb-list');
     const posts = Array.from(list.getElementsByClassName('gb-post'));
     const pagination = document.getElementById('gb-pagination');
@@ -148,11 +149,9 @@ function switchTab(t){
         currentPage = page;
         const start = (page - 1) * perPage;
         const end = start + perPage;
-
         posts.forEach((post, index) => {
             post.style.display = (index >= start && index < end) ? 'block' : 'none';
         });
-
         updatePagination();
         window.scrollTo({ top: list.offsetTop - 100, behavior: 'smooth' });
     }
@@ -162,7 +161,6 @@ function switchTab(t){
             pagination.style.display = 'none';
             return;
         }
-        
         pagination.innerHTML = '';
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
@@ -173,7 +171,6 @@ function switchTab(t){
         }
     }
 
-    // 初始化加载第一页
     if (posts.length > 0) {
         showPage(1);
     } else {
