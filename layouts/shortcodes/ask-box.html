@@ -22,17 +22,21 @@
   .qna-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
   .qna-check { font-size: 13px; display: flex; align-items: center; gap: 6px; opacity: .8; cursor: pointer; }
   .db-btn { width: 100%; background: var(--db-btn-bg); color: var(--db-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
-  .qna-item-bubble { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; }
-  .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
-  .qna-q-bubble:after { content: '+'; opacity: .3; transition: .2s; }
+  
+  /* 列表项样式 */
+  .qna-item-bubble { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+  .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .qna-q-bubble:after { content: '+'; opacity: .3; transition: .2s; flex-shrink: 0; }
   .active.qna-item-bubble .qna-q-bubble:after { transform: rotate(45deg); opacity: .7; }
   .qna-a-bubble { display: none; font-size: 13px; line-height: 1.7; color: var(--text-sub); padding-top: 12px; border-top: 1px dashed var(--border-color); margin-top: 12px; }
   .active.qna-item-bubble .qna-a-bubble { display: block; }
+  .qna-time { margin-top: 10px; font-size: 11px; opacity: .4; text-align: right; }
 </style>
 
 <div class="ask-container">
   <section class="card-item">
     <div class="section-title">提问箱</div>
+    <!-- 提问输入区保持 HTML 结构，逻辑需对接你的后端（如 Valine/Twikoo/Waline 等，此处仅保留 UI） -->
     <textarea id="newQuestionInput" class="db-input" placeholder="输入问题..." rows="3"></textarea>
     <div class="qna-options">
       <label class="qna-check"><input type="checkbox" id="newPrivateReplyCheck"><span>不公开回复</span></label>
@@ -45,55 +49,75 @@
       <span style="font-weight:800;font-size:1em">🔍 往期存档</span>
       <span id="qnaCount" style="font-size:12px;opacity:.5">0/0</span>
     </div>
-    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="renderQna()">
-    <div id="qnaList">加载中...</div>
+    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="filterQna()">
+    
+    <div id="qnaList">
+      <!-- 使用 Hugo 语法读取 content/ask 文件夹下的所有页面 -->
+      {{ range (where .Site.RegularPages "Section" "ask").ByDate.Reverse }}
+      <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
+        <div class="qna-q-bubble"><span>{{ .Title }}</span></div>
+        <div class="qna-a-bubble">
+          <div class="qna-content">{{ .Content }}</div>
+          <div class="qna-time">{{ .Date.Format "2006-01-02 15:04" }}</div>
+        </div>
+      </div>
+      {{ end }}
+    </div>
+
     <button id="loadMoreBtn" class="db-btn" style="display:none;margin-top:10px;background:0 0;border:1px solid var(--border-color);color:inherit" onclick="loadMore()">加载更多内容</button>
   </section>
 </div>
 
 <script>
 (function() {
-  const Q_CFG = { u: 'nightola', r: 'blog-moments', b: 'main' };
-  const Q_URL = `https://ghproxy.net/https://raw.githubusercontent.com/${Q_CFG.u}/${Q_CFG.r}/${Q_CFG.b}/qna.json?t=${Date.now()}`;
-  let allQ = [], filteredQ = [], currentSize = 5;
+  let items = [];
+  let currentSize = 8; // 默认显示的条数
 
-  async function initQna() {
-    try {
-      const r = await fetch(Q_URL);
-      const d = await r.json();
-      allQ = d.qna || [];
-      renderQna();
-    } catch (e) {
-      document.getElementById('qnaList').innerHTML = '数据加载失败';
-    }
+  function init() {
+    items = Array.from(document.querySelectorAll('.qna-item-bubble'));
+    filterQna(); // 初始化显示
   }
 
-  window.renderQna = function(append = false) {
-    const t = document.getElementById('qnaList');
-    const n = document.getElementById('qnaSearch').value.toLowerCase();
-    if (!append) { currentSize = 5; t.innerHTML = ""; }
-    
-    filteredQ = allQ.filter(x => x.q.toLowerCase().includes(n) || x.a.toLowerCase().includes(n));
-    
-    filteredQ.slice(append ? currentSize : 0, append ? currentSize + 5 : currentSize).forEach(item => {
-      const div = document.createElement("div");
-      div.className = "qna-item-bubble";
-      div.onclick = function() { this.classList.toggle("active"); };
-      div.innerHTML = `<div class="qna-q-bubble"><span>${item.q}</span></div><div class="qna-a-bubble"><div>${item.a}</div><div style="margin-top:10px;font-size:11px;opacity:.4;text-align:right">${item.time}</div></div>`;
-      t.appendChild(div);
+  window.filterQna = function() {
+    const keyword = document.getElementById('qnaSearch').value.toLowerCase();
+    let visibleCount = 0;
+    let matchCount = 0;
+
+    items.forEach(item => {
+      const text = item.innerText.toLowerCase();
+      const isMatch = text.includes(keyword);
+      
+      if (isMatch) {
+        matchCount++;
+        if (visibleCount < currentSize) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      } else {
+        item.style.display = 'none';
+      }
     });
 
-    if(append) currentSize += 5;
-    document.getElementById("qnaCount").textContent = `${Math.min(currentSize, filteredQ.length)}/${filteredQ.length}`;
-    document.getElementById("loadMoreBtn").style.display = currentSize >= filteredQ.length ? "none" : "block";
+    document.getElementById("qnaCount").textContent = `${visibleCount}/${matchCount}`;
+    document.getElementById("loadMoreBtn").style.display = (matchCount > visibleCount) ? "block" : "none";
   };
 
-  window.loadMore = function() { renderQna(true); };
+  window.loadMore = function() {
+    currentSize += 8;
+    filterQna();
+  };
 
   document.getElementById('newNotifyCheck').addEventListener('change', function(e) {
     document.getElementById('newEmailInput').style.display = e.target.checked ? 'block' : 'none';
   });
 
-  initQna();
+  // 确保在 DOM 加载后运行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
