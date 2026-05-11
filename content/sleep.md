@@ -1,7 +1,6 @@
 +++
-title = "视奸一下"
-menu = "main"
-weight = 1
+title = "睡似了么"
+slug = "sleep"
 +++
 
 {{< obs_station >}}
