@@ -82,7 +82,7 @@
     {{ range $answers.ByDate.Reverse }}
     {
       title: {{ .Title | jsonify }},
-      content: {{ .Content | jsonify }},
+      content: {{ .Content | safeJS }},
       date: {{ .Date.Format "2006-01-02 15:04" | jsonify }}
     },
     {{ end }}
