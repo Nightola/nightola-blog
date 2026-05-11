@@ -1,5 +1,5 @@
 <style>
-  /* 保持原有样式并增加分页按钮样式 */
+  /* 仅针对提问箱容器的局部变量和样式 */
   .ask-wrapper {
     max-width: 850px;
     margin: 20px auto;
@@ -21,7 +21,8 @@
   }
 
   .ask-wrapper .section-title { font-size: 1.1em; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-  .ask-wrapper .db-input { width: 100%; box-sizing: border-box; background: var(--ask-card-bg); border: 1px solid var(--ask-border); padding: 14px; border-radius: 14px; font-size: 14px; color: inherit; outline: 0; margin-bottom: 12px; }
+  .ask-wrapper .db-input { width: 100%; box-sizing: border-box; background: var(--ask-card-bg); border: 1px solid var(--ask-border); padding: 14px; border-radius: 14px; font-size: 14px; color: inherit; outline: 0; margin-bottom: 12px; transition: border 0.2s; }
+  .ask-wrapper .db-input:focus { border-color: var(--ask-accent); }
   .ask-wrapper .qna-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
   .ask-wrapper .qna-check { font-size: 13px; display: flex; align-items: center; gap: 6px; opacity: 0.8; cursor: pointer; }
   .ask-wrapper .db-btn { width: 100%; background: var(--ask-btn-bg); color: var(--ask-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
@@ -35,10 +36,11 @@
   .ask-wrapper .active.qna-item-bubble .qna-a-bubble { display: block; }
 
   /* 分页控制器样式 */
-  .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
-  .page-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--ask-border); background: var(--ask-card-bg); color: inherit; cursor: pointer; font-size: 13px; }
+  .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px; }
+  .page-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--ask-border); background: var(--ask-card-bg); color: inherit; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+  .page-btn:hover:not(:disabled) { background: var(--ask-btn-bg); color: var(--ask-btn-text); }
   .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .page-info { font-size: 13px; opacity: 0.6; }
+  .page-info { font-size: 13px; opacity: 0.6; font-family: monospace; }
 </style>
 
 <div class="ask-wrapper">
@@ -77,12 +79,12 @@
 </div>
 
 <script>
-  // 1. Hugo 编译阶段：将所有 MD 数据转为 JS 数组
+  // 1. Hugo 编译阶段：通过 htmlUnescape 处理乱码，通过 jsonify 封装字符串
   const allData = [
     {{ range $answers.ByDate.Reverse }}
     {
       title: {{ .Title | jsonify }},
-      content: {{ .Content | safeJS }},
+      content: {{ .Content | htmlUnescape | jsonify }},
       date: {{ .Date.Format "2006-01-02 15:04" | jsonify }}
     },
     {{ end }}
@@ -95,21 +97,27 @@
   // 渲染函数
   function renderList() {
     const listCont = document.getElementById('qnaList');
+    if (!listCont) return;
+
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     const pageData = filteredData.slice(start, end);
 
-    listCont.innerHTML = pageData.map(item => `
-      <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
-        <div class="qna-q-bubble"><span>${item.title}</span></div>
-        <div class="qna-a-bubble">
-          <div class="markdown-content">${item.content}</div>
-          <div style="margin-top:10px;font-size:11px;opacity:0.4;text-align:right">
-            更新于 ${item.date}
+    if (pageData.length === 0) {
+      listCont.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">没有找到相关提问</div>';
+    } else {
+      listCont.innerHTML = pageData.map(item => `
+        <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
+          <div class="qna-q-bubble"><span>${item.title}</span></div>
+          <div class="qna-a-bubble">
+            <div class="markdown-content">${item.content}</div>
+            <div style="margin-top:10px;font-size:11px;opacity:0.4;text-align:right">
+              更新于 ${item.date}
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    }
 
     updatePagination();
   }
@@ -117,17 +125,21 @@
   // 更新分页按钮状态
   function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-    document.getElementById('pageDisplay').innerText = `${currentPage} / ${totalPages}`;
+    const displayEl = document.getElementById('pageDisplay');
+    const ctrlEl = document.getElementById('pageCtrl');
+    
+    if (displayEl) displayEl.innerText = `${currentPage} / ${totalPages}`;
+    if (ctrlEl) ctrlEl.style.display = filteredData.length <= pageSize ? 'none' : 'flex';
+    
     document.getElementById('prevPage').disabled = currentPage === 1;
     document.getElementById('nextPage').disabled = currentPage === totalPages;
-    // 如果只有一页，隐藏分页控件
-    document.getElementById('pageCtrl').style.display = filteredData.length <= pageSize ? 'none' : 'flex';
   }
 
   // 翻页
   function changePage(step) {
     currentPage += step;
     renderList();
+    // 翻页后自动滚动到搜索框位置，体验更好
     document.getElementById('qnaSearch').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -138,7 +150,7 @@
       item.title.toLowerCase().includes(query) || 
       item.content.toLowerCase().includes(query)
     );
-    currentPage = 1; // 搜索后重置到第一页
+    currentPage = 1; 
     renderList();
   }
 
@@ -148,12 +160,16 @@
     
     // 通知切换逻辑
     document.getElementById('newNotifyCheck')?.addEventListener('change', function(e) {
-      document.getElementById('newEmailInput').style.display = e.target.checked ? 'block' : 'none';
+      const emailInput = document.getElementById('newEmailInput');
+      if (emailInput) emailInput.style.display = e.target.checked ? 'block' : 'none';
     });
 
     // 提交按钮演示
     document.getElementById('newSubmitQuestionBtn').onclick = function() {
-      alert('提问成功！请等待博主更新后显示。');
+      const input = document.getElementById('newQuestionInput').value;
+      if (!input.trim()) return alert('请先输入问题内容');
+      alert('发送成功！请关注博主后续的 MD 文件更新。');
     };
   });
 </script>
+
