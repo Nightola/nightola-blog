@@ -22,7 +22,6 @@
 .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
 .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
 .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op); display: none; }
-/* 楼层样式修改：直接读取 Weight */
 .gb-floor { position: absolute; top: 15px; right: 5px; font-size: .75em; opacity: .4; font-weight: 800; }
 .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px; padding: 0 12px }
 .gb-time { opacity: .4; font-size: .75em }
@@ -97,9 +96,12 @@
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
-    {{ range $msgs.ByWeight.Reverse }}
+    {{ $count := len $msgs }}
+    {{ range $msgs.ByDate.Reverse }}
     <div class="gb-post">
-        <div class="gb-floor">#{{ .Params.weight }}F</div>
+        <div class="gb-floor">#{{ $count }}F</div>
+        {{ $count = sub $count 1 }}
+        
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
             <span class="gb-time">{{ .Date.Format "2006-01-02 15:04" }}</span>
