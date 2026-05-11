@@ -23,7 +23,6 @@
   .qna-check { font-size: 13px; display: flex; align-items: center; gap: 6px; opacity: .8; cursor: pointer; }
   .db-btn { width: 100%; background: var(--db-btn-bg); color: var(--db-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
   
-  /* 列表项样式 */
   .qna-item-bubble { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
   .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
   .qna-q-bubble:after { content: '+'; opacity: .3; transition: .2s; flex-shrink: 0; }
@@ -31,12 +30,18 @@
   .qna-a-bubble { display: none; font-size: 13px; line-height: 1.7; color: var(--text-sub); padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 12px; }
   .active.qna-item-bubble .qna-a-bubble { display: block; }
   .qna-time { margin-top: 10px; font-size: 11px; opacity: .4; text-align: right; }
+
+  /* 分页专用样式 */
+  .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+  .page-btn { padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-sub); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+  .page-btn:hover:not(:disabled) { background: var(--db-btn-bg); color: var(--db-btn-text); }
+  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  #pageIndicator { font-size: 13px; font-weight: 700; color: var(--text-sub); }
 </style>
 
 <div class="ask-container">
   <section class="card-item">
     <div class="section-title">提问箱</div>
-    <!-- 提问输入区保持 HTML 结构，逻辑需对接你的后端（如 Valine/Twikoo/Waline 等，此处仅保留 UI） -->
     <textarea id="newQuestionInput" class="db-input" placeholder="输入问题..." rows="3"></textarea>
     <div class="qna-options">
       <label class="qna-check"><input type="checkbox" id="newPrivateReplyCheck"><span>不公开回复</span></label>
@@ -49,10 +54,9 @@
       <span style="font-weight:800;font-size:1em">🔍 往期存档</span>
       <span id="qnaCount" style="font-size:12px;opacity:.5">0/0</span>
     </div>
-    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="filterQna()">
+    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="resetToFirstPage()">
     
     <div id="qnaList">
-      <!-- 使用 Hugo 语法读取 content/ask 文件夹下的所有页面 -->
       {{ range (where .Site.RegularPages "Section" "ask").ByDate.Reverse }}
       <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
         <div class="qna-q-bubble"><span>{{ .Title }}</span></div>
@@ -64,56 +68,77 @@
       {{ end }}
     </div>
 
-    <button id="loadMoreBtn" class="db-btn" style="display:none;margin-top:10px;background:0 0;border:1px solid var(--border-color);color:inherit" onclick="loadMore()">加载更多内容</button>
+    <!-- 分页控制栏 -->
+    <div class="pagination-ctrl" id="paginationCtrl">
+      <button class="page-btn" id="prevBtn" onclick="changePage(-1)">上一页</button>
+      <span id="pageIndicator">1 / 1</span>
+      <button class="page-btn" id="nextBtn" onclick="changePage(1)">下一页</button>
+    </div>
   </section>
 </div>
 
 <script>
 (function() {
   let items = [];
-  let currentSize = 8; // 默认显示的条数
+  let currentPage = 1;
+  const pageSize = 10; // 每页显示10个
 
   function init() {
     items = Array.from(document.querySelectorAll('.qna-item-bubble'));
-    filterQna(); // 初始化显示
+    updateView();
   }
 
-  window.filterQna = function() {
-    const keyword = document.getElementById('qnaSearch').value.toLowerCase();
-    let visibleCount = 0;
-    let matchCount = 0;
+  // 搜索时重置到第一页
+  window.resetToFirstPage = function() {
+    currentPage = 1;
+    updateView();
+  };
 
-    items.forEach(item => {
-      const text = item.innerText.toLowerCase();
-      const isMatch = text.includes(keyword);
-      
-      if (isMatch) {
-        matchCount++;
-        if (visibleCount < currentSize) {
-          item.style.display = 'block';
-          visibleCount++;
-        } else {
-          item.style.display = 'none';
-        }
-      } else {
-        item.style.display = 'none';
+  window.changePage = function(step) {
+    currentPage += step;
+    updateView();
+    // 切换页面后滚动到存档顶部（可选）
+    document.getElementById('qnaSearch').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  function updateView() {
+    const keyword = document.getElementById('qnaSearch').value.toLowerCase();
+    
+    // 1. 过滤满足条件的项
+    const matchedItems = items.filter(item => {
+      return item.innerText.toLowerCase().includes(keyword);
+    });
+
+    // 2. 计算分页
+    const totalMatch = matchedItems.length;
+    const totalPages = Math.ceil(totalMatch / pageSize) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+
+    // 3. 控制显示
+    items.forEach(item => item.style.display = 'none'); // 先全部隐藏
+    
+    matchedItems.forEach((item, index) => {
+      if (index >= startIdx && index < endIdx) {
+        item.style.display = 'block';
       }
     });
 
-    document.getElementById("qnaCount").textContent = `${visibleCount}/${matchCount}`;
-    document.getElementById("loadMoreBtn").style.display = (matchCount > visibleCount) ? "block" : "none";
-  };
-
-  window.loadMore = function() {
-    currentSize += 8;
-    filterQna();
-  };
+    // 4. 更新 UI 状态
+    document.getElementById("qnaCount").textContent = `${totalMatch} 条结果`;
+    document.getElementById("pageIndicator").textContent = `${currentPage} / ${totalPages}`;
+    document.getElementById("prevBtn").disabled = (currentPage <= 1);
+    document.getElementById("nextBtn").disabled = (currentPage >= totalPages);
+    document.getElementById("paginationCtrl").style.display = (totalMatch <= pageSize && keyword === "") ? "none" : "flex";
+  }
 
   document.getElementById('newNotifyCheck').addEventListener('change', function(e) {
     document.getElementById('newEmailInput').style.display = e.target.checked ? 'block' : 'none';
   });
 
-  // 确保在 DOM 加载后运行
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
