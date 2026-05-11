@@ -136,21 +136,93 @@
   </section>
 </div>
 
-<script>
-  // 简化的清理函数：只负责去掉首尾引号，不再处理 \n
-  function cleanText(raw) {
-    if (!raw) return "";
-    const txt = document.createElement("textarea");
-    txt.innerHTML = raw;
-    return txt.value.replace(/^"|"$/g, ''); 
+<style>
+  .ask-wrapper {
+    max-width: 850px;
+    margin: 20px auto;
+    color: var(--text-main, inherit);
+    --ask-accent: #3b82f6;
+    --ask-card-bg: rgba(128, 128, 128, 0.05);
+    --ask-border: rgba(0, 0, 0, 0.08);
+    --ask-btn-bg: #1f2937;
+    --ask-btn-text: #ffffff;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .ask-wrapper {
+      --ask-card-bg: rgba(255, 255, 255, 0.05);
+      --ask-border: rgba(255, 255, 255, 0.12);
+      --ask-btn-bg: #f3f4f6;
+      --ask-btn-text: #111827;
+    }
+  }
+
+  .ask-wrapper .section-title { font-size: 1.1em; font-weight: 800; margin-bottom: 15px; }
+  .ask-wrapper .db-input { width: 100%; box-sizing: border-box; background: var(--ask-card-bg); border: 1px solid var(--ask-border); padding: 14px; border-radius: 14px; font-size: 14px; color: inherit; outline: 0; margin-bottom: 12px; }
+  .ask-wrapper .db-btn { width: 100%; background: var(--ask-btn-bg); color: var(--ask-btn-text); border: none; padding: 14px; border-radius: 14px; font-weight: 700; cursor: pointer; }
+
+  .ask-wrapper .qna-item-bubble { background: var(--ask-card-bg); border: 1px solid var(--ask-border); border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer; }
+  .ask-wrapper .qna-q-bubble { font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .ask-wrapper .qna-q-bubble:after { content: '+'; opacity: 0.3; transition: 0.2s; font-size: 18px; }
+  .ask-wrapper .active.qna-item-bubble .qna-q-bubble:after { transform: rotate(45deg); opacity: 0.7; }
+  
+  /* 确保换行和空行能够正常显示 */
+  .ask-wrapper .qna-a-bubble { 
+    display: none; 
+    font-size: 13px; 
+    line-height: 1.7; 
+    padding-top: 12px; 
+    border-top: 1px dashed var(--ask-border); 
+    margin-top: 12px; 
+    white-space: pre-wrap; 
+    word-wrap: break-word;
+  }
+  .ask-wrapper .active.qna-item-bubble .qna-a-bubble { display: block; }
+
+  .pagination-ctrl { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+  .page-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--ask-border); background: var(--ask-card-bg); color: inherit; cursor: pointer; font-size: 13px; }
+  .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .page-info { font-size: 13px; opacity: 0.6; }
+</style>
+
+<div class="ask-wrapper">
+  <!-- 输入区保持不变 -->
+  <section style="margin-bottom: 40px;">
+    <div class="section-title">📮 提温箱</div>
+    <textarea id="newQuestionInput" class="db-input" placeholder="输入内容..." rows="3"></textarea>
+    <button id="newSubmitQuestionBtn" class="db-btn">发送提问</button>
+  </section>
+
+  <!-- 存档区 -->
+  <section>
+    <div style="margin:30px 0 15px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-weight:800;font-size:1em">🔍 往期存档</span>
+      {{ $answers := where .Site.RegularPages "Section" "ask" }}
+      <span style="font-size:12px;opacity:.5">{{ len $answers }} 回复已送达</span>
+    </div>
+    <input type="text" id="qnaSearch" class="db-input" placeholder="搜索关键词..." oninput="handleSearch()">
+    <div id="qnaList"></div>
+    <div class="pagination-ctrl" id="pageCtrl">
+      <button class="page-btn" id="prevPage" onclick="changePage(-1)">上一页</button>
+      <span class="page-info" id="pageDisplay">1 / 1</span>
+      <button class="page-btn" id="nextPage" onclick="changePage(1)">下一页</button>
+    </div>
+  </section>
+</div>
+
+<script>
+  // 数据清洗：仅做最基础的安全转码，彻底告别引号和斜杠干扰
+  function safeText(str) {
+    return str.trim();
+  }
+
+  // 核心改进：使用反引号包裹 Hugo 变量，并使用 safeJS 告诉 Hugo 不要自作聪明去转义
   const allData = [
     {{ range $answers.ByDate.Reverse }}
     {
-      title: {{ .Title | jsonify }},
-      content: {{ .Plain | jsonify }},
-      date: {{ .Date.Format "2006-01-02 15:04" | jsonify }}
+      title: `{{ .Title | safeJS }}`,
+      content: `{{ .Plain | safeJS }}`,
+      date: `{{ .Date.Format "2006-01-02 15:04" | safeJS }}`
     },
     {{ end }}
   ];
@@ -169,8 +241,11 @@
 
     listCont.innerHTML = pageData.map(item => `
       <div class="qna-item-bubble" onclick="this.classList.toggle('active')">
-        <div class="qna-q-bubble"><span>${cleanText(item.title)}</span></div>
-        <div class="qna-a-bubble">${cleanText(item.content)}<div style="margin-top:15px;font-size:11px;opacity:0.4;text-align:right">更新于 ${cleanText(item.date)}</div></div>
+        <div class="qna-q-bubble"><span>${safeText(item.title)}</span></div>
+        <div class="qna-a-bubble">
+          ${safeText(item.content)}
+          <div style="margin-top:15px;font-size:11px;opacity:0.4;text-align:right">更新于 ${safeText(item.date)}</div>
+        </div>
       </div>
     `).join('');
 
@@ -179,10 +254,8 @@
 
   function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
-    const displayEl = document.getElementById('pageDisplay');
-    const ctrlEl = document.getElementById('pageCtrl');
-    if (displayEl) displayEl.innerText = `${currentPage} / ${totalPages}`;
-    if (ctrlEl) ctrlEl.style.display = filteredData.length <= pageSize ? 'none' : 'flex';
+    document.getElementById('pageDisplay').innerText = `${currentPage} / ${totalPages}`;
+    document.getElementById('pageCtrl').style.display = filteredData.length <= pageSize ? 'none' : 'flex';
     document.getElementById('prevPage').disabled = currentPage === 1;
     document.getElementById('nextPage').disabled = currentPage === totalPages;
   }
