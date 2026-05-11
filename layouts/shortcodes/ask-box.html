@@ -67,14 +67,18 @@
 </div>
 
 <script>
-  // 处理各种干扰符号的核心函数
+  // 1. 清理函数：处理编码、换行，并去掉首尾引号
   function cleanText(raw) {
     if (!raw) return "";
     const txt = document.createElement("textarea");
     txt.innerHTML = raw;
     let decoded = txt.value;
-    // 将字符形式的 \n 转换为真实的 HTML 换行标签
-    return decoded.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+    
+    // 替换换行符并去掉首尾可能出现的双引号
+    return decoded
+      .replace(/\\n/g, '<br>')
+      .replace(/\n/g, '<br>')
+      .replace(/^"|"$/g, ''); // 这一行正则专门负责去掉字符串最前和最后的 " 符号
   }
 
   const allData = [
@@ -127,10 +131,12 @@
   }
 
   function handleSearch() {
-    const query = document.getElementById('qnaSearch').value.toLowerCase();
+    const query = document.getElementById('query').value.toLowerCase(); // 如果你之前的输入框ID是qnaSearch，这里请对应
+    const searchVal = document.getElementById('qnaSearch') ? document.getElementById('qnaSearch').value.toLowerCase() : "";
+    
     filteredData = allData.filter(item => 
-      item.title.toLowerCase().includes(query) || 
-      item.content.toLowerCase().includes(query)
+      item.title.toLowerCase().includes(searchVal) || 
+      item.content.toLowerCase().includes(searchVal)
     );
     currentPage = 1; 
     renderList();
