@@ -1,7 +1,7 @@
 ---
-title: "睡似了么"
-description: "状态停更中，但幸运的话可以看到我在听什么歌哦"
-icon: "💤" 
-link: "/sleep"
+title: "Memos"
+description: "我的另一个小博客，用来发各种碎碎念！另外也可以视监我在干什么"
+icon: "🏠" 
+link: "https://nightola-memos.pages.dev/"
 weight: 5
 ---
