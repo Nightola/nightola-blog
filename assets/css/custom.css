@@ -266,7 +266,7 @@ a:hover {
 
 blockquote {
     color: #666;
-    padding-left: 3em;
+    padding-left: 1em;
     border-left: 0.5em #EEE solid;
 }
 
@@ -593,5 +593,25 @@ nav a {
     a.title h2 {
         font-size: 1.8rem !important;
         text-align: center;
+    }
+}
+
+/* ===== 移动端列表缩进优化 ===== */
+@media (max-width: 768px) {
+    /* 1. 将一级有序列表（ol）整体左移，减少默认缩进 */
+    main ol {
+        padding-left: 1.5rem !important; /* 默认通常是 2.5rem 或更高 */
+    }
+
+    /* 2. 将二级无序列表（ul）整体左移 */
+    /* 这里的选择器是指：在 ol 里面的 ul，即你的二级嵌套列表 */
+    main ol ul {
+        padding-left: 1.2rem !important; /* 进一步收紧嵌套缩进 */
+        margin-top: 5px;
+    }
+
+    /* 如果你还有三级列表，可以继续收紧 */
+    main ol ul li {
+        margin-bottom: 8px; /* 增加一点行间距，缓解视觉上的拥挤感 */
     }
 }
