@@ -44,7 +44,8 @@
 <style>
 .pc-list-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* 稍微加宽了最小宽度限制，保证文字有足够的舒展空间 */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
   margin-top: 20px;
 }
@@ -113,6 +114,7 @@
   padding: 1px 6px;
   border-radius: 4px;
   font-weight: 600;
+  white-space: nowrap;
 }
 .pc-tag.platform {
   background: rgba(128, 128, 128, .15);
@@ -142,17 +144,26 @@
   font-size: 0.8em;
   border-top: 1px dashed var(--accent-op, rgba(128, 128, 128, .1));
   padding-top: 8px;
+  gap: 10px; /* 保证两端极限挤压时有安全距离 */
 }
-.pc-version { opacity: 0.5; }
+.pc-version { 
+  opacity: 0.5;
+  white-space: nowrap; /* 强制版本号单行不折断 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 万一太长则优雅截断 */
+}
 .pc-download-link {
   color: #576b95 !important;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
+  white-space: nowrap; /* 强制链接不折断 */
+  flex-shrink: 0;
 }
 .pc-download-link:hover { color: #8fa4d0 !important; }
 .pc-download-link .arrow { display: inline-block; transition: transform 0.2s; }
 .pc-download-link:hover .arrow { transform: translateX(3px); }
+
 @media (max-width: 480px) {
   .pc-list-container { grid-template-columns: 1fr; gap: 12px; }
   .pc-item { padding: 12px; }
