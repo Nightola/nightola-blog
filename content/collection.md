@@ -1,5 +1,5 @@
 +++
-title = "我的收藏"
+title = "收藏"
 slug = "collection"
 menu = "main"
 weight = 6
