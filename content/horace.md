@@ -1,7 +1,0 @@
----
-title: "Horace's Holt"
-url: "https://byte.otter.homes/"
-avatar: "https://pic1.imgdb.cn/item/6470cc22f024cca173f187cb.png"
-description: "个人博客与技术分享"
-weight: 1
----
