@@ -1,0 +1,160 @@
+<div class="pc-list-container">
+  {{- $headless := .Site.GetPage "page" "pc-software" -}}
+  {{- if $headless -}}
+    {{- $pcResources := $headless.Resources.Match "*.md" -}}
+    {{- range sort $pcResources "Params.weight" "asc" -}}
+    <div class="pc-item">
+      {{- if .Params.icon -}}
+        <img src="{{ .Params.icon }}" class="pc-icon" alt="{{ .Title }}">
+      {{- else -}}
+        <div class="pc-icon-placeholder">🖥️</div>
+      {{- end -}}
+      
+      <div class="pc-content-box">
+        <div class="pc-title-row">
+          <span class="pc-title">{{ .Title }}</span>
+          <div class="pc-tags">
+            {{- if .Params.platform -}}
+              <span class="pc-tag platform">{{ .Params.platform }}</span>
+            {{- end -}}
+            {{- if .Params.category -}}
+              <span class="pc-tag category">{{ .Params.category }}</span>
+            {{- end -}}
+          </div>
+        </div>
+        
+        <div class="pc-desc">{{ .Params.description }}</div>
+        
+        <div class="pc-footer-row">
+          {{- if .Params.version -}}
+            <span class="pc-version">版本: {{ .Params.version }}</span>
+          {{- end -}}
+          <a href="{{ .Params.link }}" target="_blank" class="pc-download-link">
+            访问官网 / 下载 <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    {{- end -}}
+  {{- else -}}
+    <p style="text-align: center; opacity: 0.5; font-size: 0.9em; padding: 20px 0;">暂无软件记录，请检查 content/pc-software/ 目录</p>
+  {{- end -}}
+</div>
+
+<style>
+.pc-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.pc-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid var(--accent-op, rgba(128, 128, 128, .15));
+  border-radius: 8px;
+  align-items: flex-start;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+.pc-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(128, 128, 128, .4);
+}
+.pc-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px !important;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(128, 128, 128, .2);
+}
+.pc-icon-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(128, 128, 128, .1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  flex-shrink: 0;
+}
+.pc-content-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+.pc-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.pc-title {
+  font-weight: 700;
+  font-size: 0.98em;
+  color: var(--text-main, inherit);
+  line-height: 1.2;
+}
+.pc-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.pc-tag {
+  font-size: 0.7em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.pc-tag.platform {
+  background: rgba(128, 128, 128, .15);
+  color: inherit;
+  opacity: 0.8;
+}
+.pc-tag.category {
+  background: rgba(87, 107, 149, 0.15);
+  color: #576b95;
+}
+@media(prefers-color-scheme: dark) {
+  .pc-tag.category { color: #8fa4d0; }
+}
+.pc-desc {
+  font-size: 0.88em;
+  color: var(--text-desc, inherit);
+  opacity: 0.85;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+.pc-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  font-size: 0.8em;
+  border-top: 1px dashed var(--accent-op, rgba(128, 128, 128, .1));
+  padding-top: 8px;
+}
+.pc-version { opacity: 0.5; }
+.pc-download-link {
+  color: #576b95 !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.pc-download-link:hover { color: #8fa4d0 !important; }
+.pc-download-link .arrow { display: inline-block; transition: transform 0.2s; }
+.pc-download-link:hover .arrow { transform: translateX(3px); }
+@media (max-width: 480px) {
+  .pc-list-container { grid-template-columns: 1fr; gap: 12px; }
+  .pc-item { padding: 12px; }
+}
+</style>
