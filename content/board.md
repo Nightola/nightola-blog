@@ -5,4 +5,4 @@ slug = "community"
 weight = 1
 +++
 
-{{< community >}}
+{{< aoo001 >}}
