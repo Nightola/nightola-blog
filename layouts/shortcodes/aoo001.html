@@ -77,8 +77,9 @@
 <div class="friends-container">
     {{- $headless := .Site.GetPage "page" "friends" -}}
     {{- if $headless -}}
-        {{- $friendPages := $headless.Resources.Match "*.md" -}}
-        {{- range $friendPages.ByWeight -}}
+        {{- $friendResources := $headless.Resources.Match "*.md" -}}
+        
+        {{- range sort $friendResources "Params.weight" "asc" -}}
         <a href="{{ .Params.link }}" class="friend-card" target="_blank">
             <div class="friend-avatar"><img src="{{ .Params.avatar }}"></div>
             <div class="friend-info">
