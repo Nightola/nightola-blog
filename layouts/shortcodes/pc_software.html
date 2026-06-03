@@ -52,10 +52,10 @@
   margin-top: 20px;
 }
 
-/* 彻底榨干外部空白：将卡片上下的 padding 勒紧到极致的 10px */
+/* 修改：采用非对称 padding，单独将顶部的内边距从 10px 砍到 5px，强行让整体贴近卡片上边缘 */
 .pc-item {
   display: flex;
-  padding: 10px 14px; 
+  padding: 5px 14px 10px 14px; /* 格式：上 右 下 左 */
   background: rgba(255, 255, 255, .03);
   border: 1px solid var(--accent-op, rgba(128, 128, 128, .15));
   border-radius: 8px;
@@ -74,12 +74,12 @@
   min-width: 0;
 }
 
-/* 关键对齐回归：图标与右侧“名字+标签”作为一个整体，在中轴线上完美平行对齐 */
+/* 修改：将下边距从 6px 砍到 2px，极力拉近与描述文字的物理界限 */
 .pc-header-row {
   display: flex;
   align-items: center; 
   gap: 12px;
-  margin-bottom: 6px; /* 精准控制头部组合与下方描述之间的物理空隙 */
+  margin-bottom: 2px; 
 }
 
 .pc-icon {
@@ -102,19 +102,18 @@
   flex-shrink: 0;
 }
 
-/* 压缩文本块内部空隙：既不转为单列，又能让两个元素紧凑贴合 */
 .pc-title-box {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px; /* 标题与下方标签之间的空隙收紧 */
+  gap: 2px; 
   min-width: 0;
 }
 .pc-title {
   font-weight: 700;
   font-size: 0.98em;
   color: var(--text-main, inherit);
-  line-height: 1.15; /* 消除字体自带的纵向溢出空白 */
+  line-height: 1.15; 
 }
 .pc-tags {
   display: flex;
@@ -141,13 +140,14 @@
   .pc-tag.category { color: #8fa4d0; }
 }
 
-/* 压实描述文字的上下空间 */
+/* 修改：使用 margin-top: -2px 负边距，强行将描述文字向上“吸”过去，抽干死白 */
 .pc-desc {
   font-size: 0.88em;
   color: var(--text-desc, inherit);
   opacity: 0.85;
   line-height: 1.4;
-  margin-bottom: 6px; /* 缩减和下方虚线的距离 */
+  margin-top: -2px;   /* 新增：向上提拉，压缩与标签的空隙 */
+  margin-bottom: 6px; 
   word-break: break-all;
 }
 
