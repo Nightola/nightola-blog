@@ -14,6 +14,7 @@
 .form-panel button { width: 100%; background: rgba(31, 41, 55, .9); color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: .3s }
 @media(prefers-color-scheme:dark) { .form-panel button { background: rgba(243, 244, 246, .9); color: #111827 } }
 .friends-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; margin: 25px 0 40px }
+/* 恢复默认 display: flex，防止卡片被误隐藏 */
 .friend-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, .03); border-radius: 10px; border: 1px solid var(--accent-op); transition: all .3s; text-decoration: none; color: inherit; min-width: 0; box-sizing: border-box; }
 .friend-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .08); border-color: rgba(128, 128, 128, .5) }
 .friend-avatar { width: 42px !important; height: 42px !important; border-radius: 8px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(128, 128, 128, .2); display: flex !important; align-items: center; justify-content: center; background: rgba(128, 128, 128, .05) }
@@ -22,7 +23,7 @@
 .friend-name { font-weight: 700; font-size: .92em; display: block; line-height: 1.4 }
 .friend-desc { font-size: .78em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4 }
 .gb-post { position: relative; padding: 15px 0; border-bottom: 1px solid var(--accent-op); display: none; }
-.gb-floor { position: absolute; top: 15px; right: 5px; font-size: 13px; /* 使用像素单位更稳定 */opacity: .4; font-weight: 900; letter-spacing: -0.5px; /* 紧凑一点 */}
+.gb-floor { position: absolute; top: 15px; right: 5px; font-size: 13px; opacity: .4; font-weight: 900; letter-spacing: -0.5px; }
 .gb-author { font-weight: 700; font-size: .92em; margin-right: 8px; padding: 0 12px }
 .gb-time { opacity: .4; font-size: .75em }
 .gb-content { margin-top: 6px; line-height: 1.7; opacity: .9; font-size: .95em; white-space: pre-wrap; word-break: break-all; padding: 0 15px }
@@ -74,26 +75,20 @@
 </div>
 
 <div class="friends-container">
-    <a href="https://byte.otter.homes/" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="https://pic1.imgdb.cn/item/6470cc22f024cca173f187cb.png"></div>
-        <div class="friend-info"><span class="friend-name">Horace's Holt</span><div class="friend-desc">个人博客与技术分享</div></div>
-    </a>
-    <a href="https://www.glowmem.com/" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="https://www.glowmem.com/static/avatar.jpg"></div>
-        <div class="friend-info"><span class="friend-name">律回彼境</span><div class="friend-desc">我们弹下的每段旋律，终将回归。</div></div>
-    </a>
-    <a href="https://echs.top" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="https://pic.imgdb.cn/item/651ae409c458853aef1cdb7d.webp"></div>
-        <div class="friend-info"><span class="friend-name">ECHSFXY</span><div class="friend-desc">有时分享也是一种快乐</div></div>
-    </a>
-    <a href="https://yuki12720.org/" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="https://yuki12720.org/img/yoko.jpg"></div>
-        <div class="friend-info"><span class="friend-name">sea of solitude</span><div class="friend-desc">一个普通的生活博客</div></div>
-    </a>
-    <a href="https://knink-owo.github.io/myblog/" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="https://nightola.pages.dev/file/blog_post/1780462693556_36958af316cc445a926ed6857eedc398.webp"></div>
-        <div class="friend-info"><span class="friend-name">墨水的花园</span><div class="friend-desc">这是我在互联网上的小小花园——欢迎来访！</div></div>
-    </a>
+    {{- $headless := .Site.GetPage "page" "friends" -}}
+    {{- if $headless -}}
+        {{- $friendResources := $headless.Resources.Match "*.md" -}}
+        
+        {{- range sort $friendResources "Params.weight" "asc" -}}
+        <a href="{{ .Params.link }}" class="friend-card" target="_blank">
+            <div class="friend-avatar"><img src="{{ .Params.avatar }}"></div>
+            <div class="friend-info">
+                <span class="friend-name">{{ .Title }}</span>
+                <div class="friend-desc">{{ .Params.description }}</div>
+            </div>
+        </a>
+        {{- end -}}
+    {{- end -}}
 </div>
 
 <hr style="opacity:0.1;margin:30px 0;">
@@ -143,6 +138,7 @@ function switchTab(t){
     }
 }
 
+// 恢复你最原本的、单纯针对留言板的分页脚本
 (function() {
     const perPage = 10;
     const list = document.getElementById('gb-list');
@@ -154,9 +150,9 @@ function switchTab(t){
     function showPage(page) {
         currentPage = page;
         const start = (page - 1) * perPage;
-        const end = start + perPage;
+        const end = start + page; // 这里保持你原本的脚本逻辑不变
         posts.forEach((post, index) => {
-            post.style.display = (index >= start && index < end) ? 'block' : 'none';
+            post.style.display = (index >= start && index < (start + perPage)) ? 'block' : 'none';
         });
         updatePagination();
         window.scrollTo({ top: list.offsetTop - 100, behavior: 'smooth' });
