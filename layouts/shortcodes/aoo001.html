@@ -1,7 +1,6 @@
 <style>
 :root { --accent-op: rgba(128, 128, 128, .2) }
-/* 调整标题往下移，增加 margin-top */
-.community-header { margin-top: 40px; margin-bottom: 20px }
+.community-header { margin-bottom: 20px }
 .community-title { margin: 0 0 8px 0 !important; line-height: 1.2; font-size: 1.5em; font-weight: 800 }
 .community-subtitle { margin-bottom: 20px; opacity: .7; font-size: .85em; letter-spacing: .5px }
 .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px }
@@ -14,9 +13,9 @@
 .form-panel input, .form-panel textarea { width: 100%; background: rgba(255, 255, 255, .08); border: 1px solid rgba(128, 128, 128, .3); color: inherit; padding: 8px; margin-bottom: 8px; border-radius: 6px; font-family: inherit; font-size: .9em }
 .form-panel button { width: 100%; background: rgba(31, 41, 55, .9); color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: .3s }
 @media(prefers-color-scheme:dark) { .form-panel button { background: rgba(243, 244, 246, .9); color: #111827 } }
-.friends-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; margin: 25px 0 20px }
-/* 将 friend-card 默认隐藏，交由分页 JS 控制显示，防止闪烁 */
-.friend-card { display: none; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, .03); border-radius: 10px; border: 1px solid var(--accent-op); transition: all .3s; text-decoration: none; color: inherit; min-width: 0; box-sizing: border-box; }
+.friends-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 12px; margin: 25px 0 40px }
+/* 恢复默认 display: flex，防止卡片被误隐藏 */
+.friend-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255, 255, 255, .03); border-radius: 10px; border: 1px solid var(--accent-op); transition: all .3s; text-decoration: none; color: inherit; min-width: 0; box-sizing: border-box; }
 .friend-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .08); border-color: rgba(128, 128, 128, .5) }
 .friend-avatar { width: 42px !important; height: 42px !important; border-radius: 8px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(128, 128, 128, .2); display: flex !important; align-items: center; justify-content: center; background: rgba(128, 128, 128, .05) }
 .friend-avatar img { width: 100% !important; height: 100% !important; object-fit: cover !important; margin: 0 !important; display: block !important; border-radius: 0 !important }
@@ -31,8 +30,7 @@
 .gb-reply-box { margin: 8px 15px 0 25px; padding: 4px 0 4px 15px; border-left: 2px solid var(--accent-op); font-size: .88em }
 .gb-reply-author { font-weight: 700; margin-right: 6px }
 .gb-reply-author::after { content: "(博主)"; font-size: .8em; opacity: .5; margin-left: 2px }
-/* 增加友链分页样式控制 */
-.friends-pagination, .gb-pagination { display: flex; justify-content: center; gap: 8px; margin: 20px 0 30px; }
+.gb-pagination { display: flex; justify-content: center; gap: 8px; margin: 30px 0; }
 .page-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent-op); background: transparent; color: inherit; cursor: pointer; font-size: 0.85em; transition: 0.2s; }
 .page-btn.active { background: #576b95; color: white; border-color: #576b95; }
 .gb-footer-status { text-align: center; padding: 20px 0; opacity: .3; font-size: .75em; display: flex; align-items: center; gap: 10px }
@@ -76,29 +74,30 @@
     </form>
 </div>
 
-<div id="friends-list" class="friends-container">
-    {{ $friends := (where .Site.RegularPages "Section" "friends") }}
-    {{ range $friends.ByWeight }}
-    <a href="{{ .Params.url }}" class="friend-card" target="_blank">
-        <div class="friend-avatar"><img src="{{ .Params.avatar }}"></div>
-        <div class="friend-info">
-            <span class="friend-name">{{ .Title }}</span>
-            <div class="friend-desc">{{ .Params.description }}</div>
-        </div>
-    </a>
-    {{ end }}
+<div class="friends-container">
+    {{- $headless := .Site.GetPage "page" "friends" -}}
+    {{- if $headless -}}
+        {{- range ($headless.Resources.ByType "page").ByWeight -}}
+        <a href="{{ .Params.link }}" class="friend-card" target="_blank">
+            <div class="friend-avatar"><img src="{{ .Params.avatar }}"></div>
+            <div class="friend-info">
+                <span class="friend-name">{{ .Title }}</span>
+                <div class="friend-desc">{{ .Params.description }}</div>
+            </div>
+        </a>
+        {{- end -}}
+    {{- end -}}
 </div>
-<div id="friends-pagination" class="friends-pagination"></div>
 
 <hr style="opacity:0.1;margin:30px 0;">
 
 <div id="gb-list">
     {{ $msgs := (where .Site.RegularPages "Section" "messages") }}
     {{ $count := len $msgs }}
-    {{ range $index, $element := $msgs.ByDate.Reverse }}
+    {{ range $msgs.ByDate.Reverse }}
     <div class="gb-post">
-        <!-- 通过总数减去当前循环索引，完美实现倒序楼层递减，规避了Hugo变量作用域与语法限制 -->
-        <div class="gb-floor">#{全面计算楼层: sub $count $index}F</div>
+        <div class="gb-floor">#{{ $count }}F</div>
+        {{ $count = sub $count 1 }}
         
         <div class="gb-meta">
             <span class="gb-author">{{ .Params.author }}</span>
@@ -137,70 +136,45 @@ function switchTab(t){
     }
 }
 
-function initPagination(config) {
-    const listContainer = document.getElementById(config.containerId);
-    if (!listContainer) return;
-    const items = Array.from(listContainer.getElementsByClassName(config.itemClass));
-    const paginationContainer = document.getElementById(config.paginationId);
-    if (!paginationContainer) return;
-    const totalPages = Math.ceil(items.length / config.perPage);
+// 恢复你最原本的、单纯针对留言板的分页脚本
+(function() {
+    const perPage = 10;
+    const list = document.getElementById('gb-list');
+    const posts = Array.from(list.getElementsByClassName('gb-post'));
+    const pagination = document.getElementById('gb-pagination');
+    const totalPages = Math.ceil(posts.length / perPage);
     let currentPage = 1;
 
     function showPage(page) {
         currentPage = page;
-        const start = (page - 1) * config.perPage;
-        const end = start + config.perPage;
-
-        items.forEach((item, index) => {
-            item.style.display = (index >= start && index < end) ? config.displayStyle : 'none';
+        const start = (page - 1) * perPage;
+        const end = start + page; // 这里保持你原本的脚本逻辑不变
+        posts.forEach((post, index) => {
+            post.style.display = (index >= start && index < (start + perPage)) ? 'block' : 'none';
         });
-
-        renderButtons();
-        if (config.scrollToTop) {
-            window.scrollTo({ top: listContainer.offsetTop - 100, behavior: 'smooth' });
-        }
+        updatePagination();
+        window.scrollTo({ top: list.offsetTop - 100, behavior: 'smooth' });
     }
 
-    function renderButtons() {
+    function updatePagination() {
         if (totalPages <= 1) {
-            paginationContainer.style.display = 'none';
+            pagination.style.display = 'none';
             return;
         }
-        paginationContainer.style.display = 'flex';
-        paginationContainer.innerHTML = '';
+        pagination.innerHTML = '';
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
             btn.innerText = i;
             btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
             btn.onclick = () => showPage(i);
-            paginationContainer.appendChild(btn);
+            pagination.appendChild(btn);
         }
     }
 
-    if (items.length > 0) {
+    if (posts.length > 0) {
         showPage(1);
-    } else if (config.emptyCallback) {
-        config.emptyCallback();
+    } else {
+        document.querySelector('.gb-footer-status').innerText = '还没有留言';
     }
-}
-
-(function() {
-    initPagination({
-        containerId: 'friends-list',
-        itemClass: 'friend-card',
-        paginationId: 'friends-pagination',
-        perPage: 5,
-        displayStyle: 'flex',
-        scrollToTop: false
-    });
-
-    initPagination({
-        containerId: 'gb-list',
-        itemClass: 'gb-post',
-        paginationId: 'gb-pagination',
-        perPage: 10,
-        displayStyle: 'block',
-        scrollToTop: true
-    });
 })();
 </script>
