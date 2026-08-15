@@ -13,7 +13,7 @@ weight = 1
           <h1>亚离解星</h1>
           <p class="blog-subtitle">ISTP · ACG · 音游 · 猫控</p>
           <p class="intro-text">一个自我剖析、记录生活的地方。</p>
-          <a href="https://nightola.bearblog.dev/about-me/" target="_blank" class="view-more-link">查看更多关于我 →</a>
+          <a href="https://nightola-227.pages.dev/about-me/" target="_blank" class="view-more-link">查看更多关于我 →</a>
         </div>
       </div>
     </div>
